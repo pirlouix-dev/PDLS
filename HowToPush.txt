@@ -1,0 +1,6 @@
+# To update
+git commit . -m "Comment"
+git push origin main
+
+# To add a new file
+git add NEWFILE
