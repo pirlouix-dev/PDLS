@@ -42,6 +42,8 @@ fi
 
 echo "${GREEN_START}Installation de l'application${COLOR_STOP}"
 
+killall "Plat de la Semaine" 2> /dev/null
+
 if [ -e "$OLD_APP_PATH" ]
 then
 rm -r "$OLD_APP_PATH"
