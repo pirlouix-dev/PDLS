@@ -19,7 +19,7 @@ check_error() {
     fi
 }
 
-echo "${GREEN_START}Téléchargement de la mise à jour${COLOR_STOP}"
+echo "${GREEN_START}Téléchargement de Plat de la Semaine${COLOR_STOP}"
 curl -s -o "$INSTALLER_LOCATION" "$INSTALLER_URL"
 check_error "Échec du téléchargement. Vérifiez votre connexion Internet."
 
@@ -47,4 +47,4 @@ check_error "Échec de l'installation. Veuillez réessayer."
 hdiutil detach "$VOLUME_PATH" >/dev/null
 touch "$OLD_APP_PATH"
 
-echo "${GREEN_START}Mise à jour effectuée avec succès.${COLOR_STOP}"
+echo "${GREEN_START}L'application a été correctement installée.${COLOR_STOP}"
