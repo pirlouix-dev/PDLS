@@ -46,5 +46,6 @@ check_error "Échec de l'installation. Veuillez réessayer."
 
 hdiutil detach "$VOLUME_PATH" >/dev/null
 touch "$OLD_APP_PATH"
+rm "$INSTALLER_LOCATION"
 
 echo "${GREEN_START}Plat de la Semaine a été correctement installé${COLOR_STOP}"
