@@ -40,11 +40,11 @@ if [ ! -d "$NEW_APP_PATH" ]; then
     exit 1
 fi
 
-echo "${GREEN_START}Installation de la mise à jour${COLOR_STOP}"
+echo "${GREEN_START}Installation de l'application${COLOR_STOP}"
 cp -R "$NEW_APP_PATH" "$APP_PARENT_PATH"
 check_error "Échec de l'installation. Veuillez réessayer."
 
 hdiutil detach "$VOLUME_PATH" >/dev/null
 touch "$OLD_APP_PATH"
 
-echo "${GREEN_START}L'application a été correctement installée.${COLOR_STOP}"
+echo "${GREEN_START}Plat de la Semaine a été correctement installé${COLOR_STOP}"
