@@ -42,8 +42,11 @@ fi
 
 echo "${GREEN_START}Installation de l'application${COLOR_STOP}"
 
+if [ -e "$OLD_APP_PATH" ]
+then
 rm -r "$OLD_APP_PATH"
 check_error "L'ancienne version n'a pas pu être supprimée. Veuillez réessayer."
+fi
 
 cp -R "$NEW_APP_PATH" "$APP_PARENT_PATH"
 check_error "Échec de l'installation. Veuillez réessayer."
