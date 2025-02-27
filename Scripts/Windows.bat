@@ -2,8 +2,8 @@
 setlocal ENABLEEXTENSIONS
 
 :: Variables
-set INSTALLER_URL=https://raw.githubusercontent.com/pirlouix-dev/PDLS/refs/heads/main/Installers/WindowsInstaller.exe
-set INSTALLER_PATH=%TEMP%\Windows.exe
+set INSTALLER_URL=https://raw.githubusercontent.com/pirlouix-dev/PDLS/refs/heads/main/Installers/Windows.exe
+set INSTALLER_PATH=%TEMP%\PDLS_Installer.exe
 set APP_PATH=%ProgramFiles%\Plat de la Semaine\PlatDeLaSemaine.exe
 set APP_PARENT_PATH=%ProgramFiles%\Plat de la Semaine
 
