@@ -1,18 +1,16 @@
 @echo off
-chcp 65001 >nul
-reg add HKCU\Console /v VirtualTerminalLevel /t REG_DWORD /d 1 /f >nul 2>&1
 setlocal EnableDelayedExpansion
-
-:: Activation des séquences ANSI (fonctionne dans Windows Terminal ou CMD récents)
-set "GREEN_START="
-set "RED_START="
-set "COLOR_STOP="
 
 :: Variables
 set "INSTALLER_URL=https://raw.githubusercontent.com/pirlouix-dev/PDLS/refs/heads/main/Installers/Windows.exe"
 set "INSTALLER_LOCATION=%TEMP%\PDLS_Installer.exe"
 set "APP_PATH=%AppData%\Plat de la Semaine\Plat De La Semaine.exe"
 set "APP_PARENT_PATH=%AppData%\Plat de la Semaine"
+
+:: Couleurs (si ANSI est supporté, sinon laisser vide)
+set "GREEN_START=<ESC>[92m"
+set "RED_START=<ESC>[91m"
+set "COLOR_STOP=<ESC>[0m"
 
 echo %GREEN_START%Téléchargement de Plat de la Semaine%COLOR_STOP%
 ::powershell -Command "Invoke-WebRequest -Uri '%INSTALLER_URL%' -OutFile '%INSTALLER_LOCATION%'" 
