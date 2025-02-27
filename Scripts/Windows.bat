@@ -1,54 +1,61 @@
 @echo off
-setlocal ENABLEEXTENSIONS
+setlocal EnableDelayedExpansion
 
 :: Variables
-set INSTALLER_URL=https://raw.githubusercontent.com/pirlouix-dev/PDLS/refs/heads/main/Installers/Windows.exe
-set INSTALLER_PATH=%TEMP%\Plat de la Semaine.exe
-set APP_PATH=%AppData%\Plat de la Semaine\Plat De La Semaine.exe
-set APP_PARENT_PATH=%AppData%\Plat de la Semaine\
+set "INSTALLER_URL=https://raw.githubusercontent.com/pirlouix-dev/PDLS/refs/heads/main/Installers/Windows.exe"
+set "INSTALLER_LOCATION=%TEMP%\PDLS_Installer.exe"
+set "APP_PATH=%AppData%\Plat de la Semaine\Plat de la Semaine.exe"
+set "APP_PARENT_PATH=%AppData%\Plat de la Semaine"
 
-:: Colors
-set GREEN=\\033[1;32m
-set RED=\\033[1;31m
-set RESET=\\033[0m
+:: Couleurs (si ANSI est supporté, sinon laisser vide)
+set "GREEN_START="
+set "RED_START="
+set "COLOR_STOP="
 
-:: Check for errors
-:check_error
-if %ERRORLEVEL% neq 0 (
-    echo %RED%❌ %~1% %RESET%
-    goto :eof
+echo %GREEN_START%Téléchargement de Plat de la Semaine%COLOR_STOP%
+powershell -Command "Invoke-WebRequest -Uri '%INSTALLER_URL%' -OutFile '%INSTALLER_LOCATION%'" 
+set "ERR=%errorlevel%"
+call :check_error "Échec du téléchargement. Vérifiez votre connexion Internet." %ERR%
+
+if not exist "%INSTALLER_LOCATION%" (
+    echo %RED_START%Le fichier installé est introuvable. Veuillez réessayer.%COLOR_STOP%
+    exit /b 1
 )
 
-:: Download the installer
-echo %GREEN%📥 Téléchargement de Plat de la Semaine...%RESET%
-powershell -Command "(New-Object Net.WebClient).DownloadFile('%INSTALLER_URL%', '%INSTALLER_PATH%')"
-call :check_error "Échec du téléchargement. Vérifiez votre connexion Internet."
+echo %GREEN_START%Installation de l'application%COLOR_STOP%
 
-:: Stop the app if running
-echo %GREEN%🔨 Fermeture de l'application existante...%RESET%
-taskkill /F /IM PlatDeLaSemaine.exe > nul 2>&1
+:: Fermeture de l'application si elle est en cours d'exécution
+taskkill /IM "Plat de la Semaine.exe" /F >nul 2>&1
 
-:: Remove old version if it exists
+:: Suppression de l'ancienne version si elle existe
 if exist "%APP_PATH%" (
-    echo %GREEN%🗑️ Suppression de l'ancienne version...%RESET%
-    rmdir /S /Q "%APP_PARENT_PATH%"
-    call :check_error "Échec de la suppression de l'ancienne version."
+    del /F /Q "%APP_PATH%"
+    set "ERR=%errorlevel%"
+    call :check_error "L'ancienne version n'a pas pu être supprimée. Veuillez réessayer." %ERR%
 )
 
+:: Création du dossier de destination si nécessaire
 if not exist "%APP_PARENT_PATH%" (
     mkdir "%APP_PARENT_PATH%"
-    call :check_error "Impossible de créer le dossier d'installation."
 )
 
-:: Run the installer
-echo %GREEN%🚀 Installation en cours...%RESET%
-move /Y "%INSTALLER_PATH%" "%APP_PARENT_PATH%"
-call :check_error "Échec de l'installation."
+:: Installation de l'application (copie du .exe téléchargé)
+copy /Y "%INSTALLER_LOCATION%" "%APP_PATH%"
+set "ERR=%errorlevel%"
+call :check_error "Échec de l'installation. Veuillez réessayer." %ERR%
 
-:: Launch the application
+:: Suppression du fichier d'installation temporaire
+del /F /Q "%INSTALLER_LOCATION%"
 
-echo %GREEN%✅ Plat de la Semaine a été correctement installé !%RESET%
+:: Lancement de l'application
 start "" "%APP_PATH%"
 
+echo %GREEN_START%Plat de la Semaine a été correctement installé%COLOR_STOP%
+exit /b 0
 
-endlocal
+:check_error
+if not "%~2"=="0" (
+    echo %RED_START%%~1%COLOR_STOP%
+    exit /b 1
+)
+goto :eof
