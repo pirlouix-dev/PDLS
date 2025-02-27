@@ -4,10 +4,9 @@ reg add HKCU\Console /v VirtualTerminalLevel /t REG_DWORD /d 1 /f >nul 2>&1
 setlocal EnableDelayedExpansion
 
 :: Activation des séquences ANSI (fonctionne dans Windows Terminal ou CMD récents)
-for /f "delims=" %%a in ('echo prompt $E ^| cmd') do set "ESC=%%a"
-set "GREEN_START=%ESC%[1;32m"
-set "RED_START=%ESC%[1;31m"
-set "COLOR_STOP=%ESC%[0m"
+set "GREEN_START="
+set "RED_START="
+set "COLOR_STOP="
 
 :: Variables
 set "INSTALLER_URL=https://raw.githubusercontent.com/pirlouix-dev/PDLS/refs/heads/main/Installers/Windows.exe"
