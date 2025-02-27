@@ -13,7 +13,8 @@ set "RED_START="
 set "COLOR_STOP="
 
 echo %GREEN_START%Téléchargement de Plat de la Semaine%COLOR_STOP%
-powershell -Command "Invoke-WebRequest -Uri '%INSTALLER_URL%' -OutFile '%INSTALLER_LOCATION%'" 
+::powershell -Command "Invoke-WebRequest -Uri '%INSTALLER_URL%' -OutFile '%INSTALLER_LOCATION%'" 
+powershell -Command "(New-Object Net.WebClient).DownloadFile('%INSTALLER_URL%', '%INSTALLER_LOCATION%')"
 set "ERR=%errorlevel%"
 call :check_error "Échec du téléchargement. Vérifiez votre connexion Internet." %ERR%
 
