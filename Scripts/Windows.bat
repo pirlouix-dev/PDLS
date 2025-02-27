@@ -8,15 +8,15 @@ set APP_PATH=%AppData%\Plat de la Semaine\Plat De La Semaine.exe
 set APP_PARENT_PATH=%AppData%\Plat de la Semaine
 
 :: Colors
-set GREEN=[92m
-set RED=[91m
-set RESET=[0m
+set GREEN=\\033[1;32m
+set RED=\\033[1;31m
+set RESET=\\033[0m
 
 :: Check for errors
 :check_error
 if %ERRORLEVEL% neq 0 (
     echo %RED%❌ %~1%RESET%
-    exit /b 1
+    goto :eof
 )
 
 :: Download the installer
@@ -39,10 +39,6 @@ if exist "%APP_PATH%" (
 echo %GREEN%🚀 Installation en cours...%RESET%
 move /Y "%INSTALLER_PATH%" "%APP_PARENT_PATH%"
 call :check_error "Échec de l'installation."
-
-:: Clean up
-echo %GREEN%🧹 Nettoyage...%RESET%
-del /F "%INSTALLER_PATH%"
 
 :: Launch the application
 
