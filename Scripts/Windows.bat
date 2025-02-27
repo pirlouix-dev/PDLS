@@ -5,7 +5,7 @@ setlocal ENABLEEXTENSIONS
 set INSTALLER_URL=https://raw.githubusercontent.com/pirlouix-dev/PDLS/refs/heads/main/Installers/Windows.exe
 set INSTALLER_PATH=%TEMP%\Plat de la Semaine.exe
 set APP_PATH=%AppData%\Plat de la Semaine\Plat De La Semaine.exe
-set APP_PARENT_PATH=%AppData%\Plat de la Semaine
+set APP_PARENT_PATH=%AppData%\Plat de la Semaine\
 
 :: Colors
 set GREEN=\\033[1;32m
@@ -34,6 +34,11 @@ if exist "%APP_PATH%" (
     echo %GREEN%🗑️ Suppression de l'ancienne version...%RESET%
     rmdir /S /Q "%APP_PARENT_PATH%"
     call :check_error "Échec de la suppression de l'ancienne version."
+)
+
+if not exist "%APP_PARENT_PATH%" (
+    mkdir "%APP_PARENT_PATH%"
+    call :check_error "Impossible de créer le dossier d'installation."
 )
 
 :: Run the installer
