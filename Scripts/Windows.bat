@@ -37,7 +37,7 @@ if exist "%APP_PATH%" (
 
 :: Run the installer
 echo %GREEN%🚀 Installation en cours...%RESET%
-move /Y "%INSTALLER_PATH%" "%APP_PATH%"
+move /Y "%INSTALLER_PATH%" "%APP_PARENT_PATH%"
 call :check_error "Échec de l'installation."
 
 :: Clean up
