@@ -15,9 +15,10 @@ set RESET=\\033[0m
 :: Check for errors
 :check_error
 if %ERRORLEVEL% neq 0 (
-    echo %RED%❌ %~1%RESET%
-    goto :eof
+    echo %RED%❌ %~1% %RESET%
+    exit /b 1
 )
+goto :eof
 
 :: Download the installer
 echo %GREEN%📥 Téléchargement de Plat de la Semaine...%RESET%
