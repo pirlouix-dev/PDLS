@@ -1,16 +1,19 @@
 @echo off
+chcp 65001 >nul
+reg add HKCU\Console /v VirtualTerminalLevel /t REG_DWORD /d 1 /f >nul 2>&1
 setlocal EnableDelayedExpansion
+
+:: Activation des séquences ANSI (fonctionne dans Windows Terminal ou CMD récents)
+for /f "delims=" %%a in ('echo prompt $E ^| cmd') do set "ESC=%%a"
+set "GREEN_START=%ESC%[1;32m"
+set "RED_START=%ESC%[1;31m"
+set "COLOR_STOP=%ESC%[0m"
 
 :: Variables
 set "INSTALLER_URL=https://raw.githubusercontent.com/pirlouix-dev/PDLS/refs/heads/main/Installers/Windows.exe"
 set "INSTALLER_LOCATION=%TEMP%\PDLS_Installer.exe"
-set "APP_PATH=%AppData%\Plat de la Semaine\Plat de la Semaine.exe"
+set "APP_PATH=%AppData%\Plat de la Semaine\Plat De La Semaine.exe"
 set "APP_PARENT_PATH=%AppData%\Plat de la Semaine"
-
-:: Couleurs (si ANSI est supporté, sinon laisser vide)
-set "GREEN_START="
-set "RED_START="
-set "COLOR_STOP="
 
 echo %GREEN_START%Téléchargement de Plat de la Semaine%COLOR_STOP%
 ::powershell -Command "Invoke-WebRequest -Uri '%INSTALLER_URL%' -OutFile '%INSTALLER_LOCATION%'" 
@@ -26,7 +29,7 @@ if not exist "%INSTALLER_LOCATION%" (
 echo %GREEN_START%Installation de l'application%COLOR_STOP%
 
 :: Fermeture de l'application si elle est en cours d'exécution
-taskkill /IM "Plat de la Semaine.exe" /F >nul 2>&1
+taskkill /IM "Plat De La Semaine.exe" /F >nul 2>&1
 
 :: Suppression de l'ancienne version si elle existe
 if exist "%APP_PATH%" (
@@ -40,10 +43,13 @@ if not exist "%APP_PARENT_PATH%" (
     mkdir "%APP_PARENT_PATH%"
 )
 
-:: Installation de l'application (copie du .exe téléchargé)
-copy /Y "%INSTALLER_LOCATION%" "%APP_PATH%"
+:: Installation de l'application (copie du .exe téléchargé) sans afficher "1 fichier(s) copié(s)"
+copy /Y /Q "%INSTALLER_LOCATION%" "%APP_PATH%"
 set "ERR=%errorlevel%"
 call :check_error "Échec de l'installation. Veuillez réessayer." %ERR%
+
+:: Création d'un raccourci dans le menu Démarrer pour qu'il soit repérable via la recherche Windows
+powershell -Command "$s=(New-Object -ComObject WScript.Shell).CreateShortcut(\"%APPDATA%\Microsoft\Windows\Start Menu\Programs\Plat de la Semaine.lnk\"); $s.TargetPath=\"%APP_PATH%\"; $s.WorkingDirectory=\"%APP_PARENT_PATH%\"; $s.IconLocation=\"%APP_PATH%\"; $s.Save()"
 
 :: Suppression du fichier d'installation temporaire
 del /F /Q "%INSTALLER_LOCATION%"
