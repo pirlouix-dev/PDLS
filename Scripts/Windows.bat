@@ -8,9 +8,12 @@ set "APP_PATH=%AppData%\Plat de la Semaine\Plat De La Semaine.exe"
 set "APP_PARENT_PATH=%AppData%\Plat de la Semaine"
 
 :: Couleurs (si ANSI est supporté, sinon laisser vide)
-set "GREEN_START=<ESC>[92m"
-set "RED_START=<ESC>[91m"
-set "COLOR_STOP=<ESC>[0m"
+::set "GREEN_START=<ESC>[92m"
+::set "RED_START=<ESC>[91m"
+::set "COLOR_STOP=<ESC>[0m"
+set "GREEN_START="
+set "RED_START="
+set "COLOR_STOP="
 
 echo %GREEN_START%Téléchargement de Plat de la Semaine%COLOR_STOP%
 ::powershell -Command "Invoke-WebRequest -Uri '%INSTALLER_URL%' -OutFile '%INSTALLER_LOCATION%'" 
