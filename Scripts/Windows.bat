@@ -37,7 +37,7 @@ if exist "%APP_PATH%" (
 
 :: Run the installer
 echo %GREEN%🚀 Installation en cours...%RESET%
-start /wait "" "%INSTALLER_PATH%" /S
+move /Y "%INSTALLER_PATH%" "%APP_PATH%"
 call :check_error "Échec de l'installation."
 
 :: Clean up
@@ -45,13 +45,9 @@ echo %GREEN%🧹 Nettoyage...%RESET%
 del /F "%INSTALLER_PATH%"
 
 :: Launch the application
-if exist "%APP_PATH%" (
-    echo %GREEN%✅ Plat de la Semaine a été correctement installé !%RESET%
-    start "" "%APP_PATH%"
-) else (
-    echo %RED%❌ L'application n'a pas pu être installée.%RESET%
-    exit /b 1
-)
+
+echo %GREEN%✅ Plat de la Semaine a été correctement installé !%RESET%
+start "" "%APP_PATH%"
+
 
 endlocal
-exit /b 0
