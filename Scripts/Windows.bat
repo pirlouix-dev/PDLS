@@ -3,7 +3,7 @@ setlocal ENABLEEXTENSIONS
 
 :: Variables
 set INSTALLER_URL=https://raw.githubusercontent.com/pirlouix-dev/PDLS/refs/heads/main/Installers/WindowsInstaller.exe
-set INSTALLER_PATH=%TEMP%\PDLS_Installer.exe
+set INSTALLER_PATH=%TEMP%\Windows.exe
 set APP_PATH=%ProgramFiles%\Plat de la Semaine\PlatDeLaSemaine.exe
 set APP_PARENT_PATH=%ProgramFiles%\Plat de la Semaine
 
@@ -18,7 +18,6 @@ if %ERRORLEVEL% neq 0 (
     echo %RED%❌ %~1%RESET%
     exit /b 1
 )
-exit /b 0
 
 :: Download the installer
 echo %GREEN%📥 Téléchargement de Plat de la Semaine...%RESET%
