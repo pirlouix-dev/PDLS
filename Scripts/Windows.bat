@@ -18,17 +18,18 @@ if not exist "%INSTALLER_LOCATION%" (
 echo Installation de l'application
 
 :: Fermeture de l'ancienne version
-tasklist /FI "IMAGENAME eq Plat de la Semaine.exe" 2>NUL | find /I "Plat de la Semaine.exe" >NUL
+tasklist /FI "IMAGENAME eq Plat de la Semaine.exe" 2>NUL | find /I "Plat de la Semaine.exe" >nul
 if %errorlevel%==0 (
     taskkill /IM "Plat de la Semaine.exe" /F >nul 2>&1
     timeout /T 1 /NOBREAK >nul
-    :wait_loop
-    tasklist /FI "IMAGENAME eq Plat de la Semaine.exe" 2>NUL | find /I "Plat de la Semaine.exe" >NUL
-    if %errorlevel%==0 (
-        echo En attente de la fermeture de l'ancienne version...
-        timeout /T 1 /NOBREAK >nul
-        goto wait_loop
-    )
+)
+
+:wait_loop
+tasklist /FI "IMAGENAME eq Plat de la Semaine.exe" 2>NUL | find /I "Plat de la Semaine.exe" >nul
+if %errorlevel%==0 (
+    echo En attente de la fermeture de l'ancienne version...
+    timeout /T 1 /NOBREAK >nul
+    goto wait_loop
 )
 
 :: Installation de l'application
