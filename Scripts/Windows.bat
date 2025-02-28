@@ -1,4 +1,5 @@
 @echo off
+chcp 1252
 setlocal EnableDelayedExpansion
 
 :: Variables
