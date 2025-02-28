@@ -41,7 +41,7 @@ if not exist "%APP_PARENT_PATH%" (
 )
 
 :: Installation de l'application (copie du .exe téléchargé)
-copy /Y "%INSTALLER_LOCATION%" "%APP_PATH%"
+copy /Y /Q "%INSTALLER_LOCATION%" "%APP_PATH%"
 set "ERR=%errorlevel%"
 call :check_error "Échec de l'installation. Veuillez réessayer." %ERR%
 
