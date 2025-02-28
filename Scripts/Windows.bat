@@ -33,10 +33,16 @@ if %errorlevel%==0 (
 )
 
 :: Suppression de l'ancienne version si elle existe
-if exist "%APP_PATH%" (
-    del /F /Q "%APP_PATH%"
-    set "ERR=%errorlevel%"
-    call :check_error "L'ancienne version n'a pas pu être supprimée. Veuillez réessayer." %ERR%
+if %errorlevel%==0 (
+    taskkill /IM "Plat De La Semaine.exe" /F >nul 2>&1
+    timeout /T 2 /NOBREAK >nul
+    :wait_loop
+    tasklist /FI "IMAGENAME eq Plat De La Semaine.exe" 2>NUL | find /I "Plat De La Semaine.exe" >NUL
+    if %errorlevel%==0 (
+        echo "En attente de la fermeture de l'ancienne version" 
+        timeout /T 1 /NOBREAK >nul
+        goto wait_loop
+    )
 )
 
 :: Création du dossier de destination si nécessaire
