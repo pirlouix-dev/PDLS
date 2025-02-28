@@ -41,7 +41,7 @@ Entrez la commande
 - Persuadez votre navigateur internet de télécharger le fichier
 
 - Déplacez le fichier dans l'emplacement de votre choix (facultatif)
-> Par défaut, c'est %APPDATA%\Plat de la Semaine
-> Avec un raccourci dans %APPDATA%\Microsoft\Windows\Start Menu\Programs
+> Par défaut, c'est %APPDATA%\Plat de la Semaine  
+Avec un raccourci dans %APPDATA%\Microsoft\Windows\Start Menu\Programs
 
 - Lancez le fichier
