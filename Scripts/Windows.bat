@@ -26,18 +26,18 @@ if not exist "%INSTALLER_LOCATION%" (
 echo %GREEN_START%Installation de l'application%COLOR_STOP%
 
 :: Vérifier si l'application est ouverte
-tasklist /FI "IMAGENAME eq Plat De La Semaine.exe" 2>NUL | find /I "Plat De La Semaine.exe" >NUL
+tasklist /FI "IMAGENAME eq Plat de la Semaine.exe" 2>NUL | find /I "Plat de la Semaine.exe" >NUL
 if %errorlevel%==0 (
-    taskkill /IM "Plat De La Semaine.exe" /F >nul 2>&1
+    taskkill /IM "Plat de la Semaine.exe" /F >nul 2>&1
     timeout /T 2 /NOBREAK >nul
 )
 
 :: Suppression de l'ancienne version si elle existe
 if %errorlevel%==0 (
-    taskkill /IM "Plat De La Semaine.exe" /F >nul 2>&1
+    taskkill /IM "Plat de la Semaine.exe" /F >nul 2>&1
     timeout /T 2 /NOBREAK >nul
     :wait_loop
-    tasklist /FI "IMAGENAME eq Plat De La Semaine.exe" 2>NUL | find /I "Plat De La Semaine.exe" >NUL
+    tasklist /FI "IMAGENAME eq Plat de la Semaine.exe" 2>NUL | find /I "Plat de la Semaine.exe" >NUL
     if %errorlevel%==0 (
         echo En attente de la fermeture de l'ancienne version...
         timeout /T 1 /NOBREAK >nul
