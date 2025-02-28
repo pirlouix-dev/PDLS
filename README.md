@@ -1,7 +1,7 @@
 # Installation de Plat de la Semaine
 1. [Pour MacOS](#pour-macos)
 2.  [Pour Windows](#pour-windows)
-3.  [Pour un autre plateforme](#pour-une-autre-plateforme)
+3.  [Pour une autre plateforme](#pour-une-autre-plateforme)
 
 ## Pour MacOS
 
