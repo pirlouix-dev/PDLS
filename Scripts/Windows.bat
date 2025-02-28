@@ -39,7 +39,7 @@ if %errorlevel%==0 (
     :wait_loop
     tasklist /FI "IMAGENAME eq Plat De La Semaine.exe" 2>NUL | find /I "Plat De La Semaine.exe" >NUL
     if %errorlevel%==0 (
-        echo "En attente de la fermeture de l'ancienne version" 
+        echo En attente de la fermeture de l'ancienne version...
         timeout /T 1 /NOBREAK >nul
         goto wait_loop
     )
