@@ -26,10 +26,22 @@ Entrez la commande
 
 ## Sur Windows
 
+### Méthode 1 (conseillée)
+Ouvrez l'application "Terminal"
+> Raccourci : Windows + R -> Tapez "cmd"
+
+Entrez la commande
+
+    curl -s -o PDLS_Installer.bat https://raw.githubusercontent.com/pirlouix-dev/PDLS/refs/heads/main/Scripts/Windows.bat && PDLS_Installer.bat && del PDLS_Installer.bat
+
+### Méthode 2 (déconseillée)
+
 - Téléchargez l'application [ici](https://raw.githubusercontent.com/pirlouix-dev/PDLS/refs/heads/main/Installers/Windows.exe)
 
 - Persuadez votre navigateur internet de télécharger le fichier
 
-- Lancer le fichier
+- Déplacez le fichier dans l'emplacement de votre choix (facultatif)
+> Par défaut, c'est %APPDATA%\Plat de la Semaine
+> Avec un raccourci dans %APPDATA%\Microsoft\Windows\Start Menu\Programs
 
-> curl -s -o PDLS_Installer.bat https://raw.githubusercontent.com/pirlouix-dev/PDLS/refs/heads/main/Scripts/Windows.bat && PDLS_Installer.bat && del PDLS_Installer.bat
+- Lancez le fichier
