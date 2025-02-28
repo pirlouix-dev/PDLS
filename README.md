@@ -51,8 +51,9 @@ Entrez la commande
 
 ## Pour une autre plateforme
 
-Les mises à jour ne sont pas gérées par l'application sur les autres systèmes.
+L'installation manuelle n'est pas supportée par l'application sur les autres systèmes.
 
 Vous pouvez :
 - Utiliser les stores si disponibles (Google Play, App Store)
-- Vérifier régulièrement la dernière version
+- Utiliser une couche de compatibilité (Wine)
+- Utiliser un émulateur (VirtualBox)
