@@ -1,6 +1,8 @@
 # Installation de Plat de la Semaine
+1. [Pour MacOS](#pour-macos)
+2.  [Pour Windows](#pour-windows)
 
-## Sur MacOS
+## Pour MacOS
 
 ### Méthode 1 (conseillée)
 Ouvrez l'application "Terminal"
@@ -24,7 +26,7 @@ Entrez la commande
 - Allez dans Réglages Systèmes > Confidentialité et sécurité > "Ouvrir quand même"
 	> Il faudra peut-être scroller, mais pas changer d’onglet
 
-## Sur Windows
+## Pour Windows
 
 ### Méthode 1 (conseillée)
 Ouvrez l'application "Terminal"
@@ -41,7 +43,15 @@ Entrez la commande
 - Persuadez votre navigateur internet de télécharger le fichier
 
 - Déplacez le fichier dans l'emplacement de votre choix (facultatif)
-> Par défaut, c'est %APPDATA%\Plat de la Semaine  
-Avec un raccourci dans %APPDATA%\Microsoft\Windows\Start Menu\Programs
+> Par défaut, c'est %APPDATA%\Plat de la Semaine
+> Avec un raccourci dans %APPDATA%\Microsoft\Windows\Start Menu\Programs
 
 - Lancez le fichier
+
+## Pour une autre plateforme
+
+Les mises à jour ne sont pas gérées par l'application sur les autres systèmes.
+
+Vous pouvez :
+- Utiliser les stores si disponibles (Google Play, App Store)
+- Vérifier régulièrement la dernière version
