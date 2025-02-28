@@ -25,8 +25,12 @@ if not exist "%INSTALLER_LOCATION%" (
 
 echo %GREEN_START%Installation de l'application%COLOR_STOP%
 
-:: Fermeture de l'application si elle est en cours d'exécution
-taskkill /IM "Plat de la Semaine.exe" /F >nul 2>&1
+:: Vérifier si l'application est ouverte
+tasklist /FI "IMAGENAME eq Plat De La Semaine.exe" 2>NUL | find /I "Plat De La Semaine.exe" >NUL
+if %errorlevel%==0 (
+    taskkill /IM "Plat De La Semaine.exe" /F >nul 2>&1
+    timeout /T 2 /NOBREAK >nul
+)
 
 :: Suppression de l'ancienne version si elle existe
 if exist "%APP_PATH%" (
