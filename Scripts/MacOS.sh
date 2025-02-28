@@ -11,7 +11,6 @@ YELLOW_START="\033[1;33m"
 RED_START="\033[1;31m"
 COLOR_STOP="\033[0m"
 
-# Function to check for errors and exit if necessary
 check_error() {
     if [ $? -ne 0 ]; then
         echo "${RED_START}$1${COLOR_STOP}"
@@ -19,6 +18,7 @@ check_error() {
     fi
 }
 
+# Downloading
 echo "${GREEN_START}Téléchargement de Plat de la Semaine${COLOR_STOP}"
 curl -s -o "$INSTALLER_LOCATION" "$INSTALLER_URL"
 check_error "Échec du téléchargement. Vérifiez votre connexion Internet."
@@ -29,6 +29,7 @@ if [ ! -f "$INSTALLER_LOCATION" ]; then
     exit 1
 fi
 
+# Disk mounting
 echo "${GREEN_START}Montage du disque${COLOR_STOP}"
 hdiutil attach "$INSTALLER_LOCATION" >/dev/null
 check_error "Échec du montage du disque. Veuillez réessayer."
@@ -40,8 +41,8 @@ if [ ! -d "$NEW_APP_PATH" ]; then
     exit 1
 fi
 
+# Removing old version
 echo "${GREEN_START}Installation de l'application${COLOR_STOP}"
-
 killall "Plat de la Semaine" 2> /dev/null
 
 if [ -e "$OLD_APP_PATH" ]
@@ -53,9 +54,10 @@ fi
 cp -R "$NEW_APP_PATH" "$APP_PARENT_PATH"
 check_error "Échec de l'installation. Veuillez réessayer."
 
+#Cleaning
 hdiutil detach "$VOLUME_PATH" >/dev/null
 touch "$OLD_APP_PATH"
 rm "$INSTALLER_LOCATION"
-open "$OLD_APP_PATH"
 
+open "$OLD_APP_PATH"
 echo "${GREEN_START}Plat de la Semaine a été correctement installé${COLOR_STOP}"
