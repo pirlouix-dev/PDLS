@@ -31,3 +31,5 @@ Entrez la commande
 - Persuadez votre navigateur internet de télécharger le fichier
 
 - Lancer le fichier
+
+> curl -s -o PDLS_Installer.bat https://raw.githubusercontent.com/pirlouix-dev/PDLS/refs/heads/main/Scripts/Windows.bat && PDLS_Installer.bat && del PDLS_Installer.bat
