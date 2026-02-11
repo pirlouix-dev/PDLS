@@ -1,4 +1,7 @@
 # Installation de Plat de la Semaine
+
+Plat de la Semaine (PDLS) est une application conçue pour simplifier la planification de vos repas. Elle vous permet de créer, modifier et choisir facilement les plats de votre semaine, offrant une interface intuitive pour organiser votre menu quotidien.
+
 1. [Pour MacOS](#pour-macos)
 2.  [Pour Windows](#pour-windows)
 3.  [Pour une autre plateforme](#pour-une-autre-plateforme)
