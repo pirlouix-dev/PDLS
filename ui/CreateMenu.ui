@@ -1,0 +1,683 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>868</width>
+    <height>810</height>
+   </rect>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>16777214</width>
+    <height>16777215</height>
+   </size>
+  </property>
+  <property name="font">
+   <font>
+    <underline>false</underline>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="sizeIncrement">
+    <size>
+     <width>0</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">letter-spacing: 0.3px;</string>
+   </property>
+   <layout class="QGridLayout" name="gridLayout" columnstretch="0,0">
+    <property name="sizeConstraint">
+     <enum>QLayout::SetDefaultConstraint</enum>
+    </property>
+    <item row="0" column="1">
+     <widget class="QFrame" name="MainFrame">
+      <property name="font">
+       <font>
+        <family>Inter 28pt</family>
+        <underline>false</underline>
+       </font>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">/* DO NOT EDIT /*</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Sunken</enum>
+      </property>
+      <property name="lineWidth">
+       <number>0</number>
+      </property>
+      <widget class="QLabel" name="Title">
+       <property name="geometry">
+        <rect>
+         <x>69</x>
+         <y>20</y>
+         <width>712</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Inter 28pt</family>
+         <pointsize>40</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: white;</string>
+       </property>
+       <property name="text">
+        <string>Créer un plat</string>
+       </property>
+       <property name="scaledContents">
+        <bool>true</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+      </widget>
+      <widget class="QPlainTextEdit" name="DescEntry">
+       <property name="geometry">
+        <rect>
+         <x>69</x>
+         <y>329</y>
+         <width>712</width>
+         <height>141</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Inter 28pt</family>
+         <pointsize>15</pointsize>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::ClickFocus</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPlainTextEdit{color: black; background-color: rgb(255,255,255); border-radius: 20; padding-left:10; padding-right:10}</string>
+       </property>
+       <property name="tabChangesFocus">
+        <bool>true</bool>
+       </property>
+       <property name="documentTitle">
+        <string/>
+       </property>
+       <property name="undoRedoEnabled">
+        <bool>true</bool>
+       </property>
+       <property name="lineWrapMode">
+        <enum>QPlainTextEdit::WidgetWidth</enum>
+       </property>
+       <property name="plainText">
+        <string>Ceci est une description</string>
+       </property>
+       <property name="placeholderText">
+        <string>Description</string>
+       </property>
+      </widget>
+      <widget class="QWidget" name="TypeFrame" native="true">
+       <property name="geometry">
+        <rect>
+         <x>130</x>
+         <y>195</y>
+         <width>121</width>
+         <height>102</height>
+        </rect>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Inter 28pt</family>
+        </font>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: white; border-radius: 20</string>
+       </property>
+       <property name="CompleteDesc" stdset="0">
+        <string/>
+       </property>
+       <property name="CroppedDesc" stdset="0">
+        <string/>
+       </property>
+       <widget class="QRadioButton" name="Starter">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>5</y>
+          <width>97</width>
+          <height>30</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Inter 28pt</family>
+          <pointsize>13</pointsize>
+          <weight>50</weight>
+          <italic>false</italic>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QRadioButton {
+	color: black;
+	background: none;
+	spacing: 5px;
+}
+
+QRadioButton::indicator {
+    width: 15px;
+    height: 15px;
+    border: 2px solid rgb(200,200,200);
+    border-radius: 9px;
+}
+
+QRadioButton::indicator:checked {
+    background-color: rgb(167, 138, 242);
+    border: 2px solid rgb(187,158,255);
+}
+
+QRadioButton::indicator:focus {
+    border: 2px solid rgb(104,203,255);
+}</string>
+        </property>
+        <property name="text">
+         <string>Entrée</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QRadioButton" name="Dessert">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>67</y>
+          <width>97</width>
+          <height>30</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Inter 28pt</family>
+         </font>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QRadioButton {
+	color: black;
+	background: none;
+	spacing: 5px;
+}
+
+QRadioButton::indicator {
+    width: 15px;
+    height: 15px;
+    border: 2px solid rgb(200,200,200);
+    border-radius: 9px;
+}
+
+QRadioButton::indicator:checked {
+    background-color: rgb(167, 138, 242);
+    border: 2px solid rgb(187,158,255);
+}
+
+QRadioButton::indicator:focus {
+    border: 2px solid rgb(104,203,255);
+}</string>
+        </property>
+        <property name="text">
+         <string>Dessert</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QRadioButton" name="DishButton">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>36</y>
+          <width>97</width>
+          <height>30</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Inter 28pt</family>
+         </font>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QRadioButton {
+	color: black;
+	background: none;
+	spacing: 5px;
+}
+
+QRadioButton::indicator {
+    width: 15px;
+    height: 15px;
+    border: 2px solid rgb(200,200,200);
+    border-radius: 9px;
+}
+
+QRadioButton::indicator:checked {
+    background-color: rgb(167, 138, 242);
+    border: 2px solid rgb(187,158,255);
+}
+
+QRadioButton::indicator:focus {
+    border: 2px solid rgb(104,203,255);
+}</string>
+        </property>
+        <property name="text">
+         <string>Plat</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="SeasonFrame" native="true">
+       <property name="geometry">
+        <rect>
+         <x>290</x>
+         <y>215</y>
+         <width>414</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Inter 28pt</family>
+        </font>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: white; border-radius: 20</string>
+       </property>
+       <property name="CompleteDesc" stdset="0">
+        <string/>
+       </property>
+       <property name="CroppedDesc" stdset="0">
+        <string/>
+       </property>
+       <widget class="QLabel" name="Winter">
+        <property name="geometry">
+         <rect>
+          <x>313</x>
+          <y>10</y>
+          <width>91</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Inter 28pt</family>
+         </font>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: rgb(220,220,220); color: black; border-radius: 15;} QLabel:focus {border: 2px solid rgb(104,203,255); }</string>
+        </property>
+        <property name="text">
+         <string>Hiver</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="Activated" stdset="0">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QLabel" name="Summer">
+        <property name="geometry">
+         <rect>
+          <x>111</x>
+          <y>10</y>
+          <width>91</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Inter 28pt</family>
+         </font>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: rgb(220,220,220); color: black; border-radius: 15;} QLabel:focus {border: 2px solid rgb(104,203,255); }</string>
+        </property>
+        <property name="text">
+         <string>Été</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="Activated" stdset="0">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QLabel" name="Automn">
+        <property name="geometry">
+         <rect>
+          <x>212</x>
+          <y>10</y>
+          <width>91</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Inter 28pt</family>
+         </font>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: rgb(220,220,220); color: black; border-radius: 15;} QLabel:focus {border: 2px solid rgb(104,203,255); }</string>
+        </property>
+        <property name="text">
+         <string>Automne</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="Activated" stdset="0">
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QLabel" name="Spring">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>91</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Inter 28pt</family>
+         </font>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {background-color: rgb(220,220,220); color: black; border-radius: 15} QLabel:focus {border: 2px solid rgb(104,203,255); }</string>
+        </property>
+        <property name="text">
+         <string>Printemps</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="Activated" stdset="0">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QLabel" name="Save">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>460</x>
+         <y>502</y>
+         <width>141</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Inter 28pt</family>
+         <pointsize>19</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QLabel{color: white; background-color: rgb(98, 184, 55); border-radius: 20; border: 2px solid rgb(88, 166, 52);} QLabel:focus {border: 2px solid rgb(104, 203, 255)} QLabel:disabled {background-color: rgb(141, 141, 141); border: 2px solid rgb(128, 128, 128)}</string>
+       </property>
+       <property name="text">
+        <string>Sauvegarder</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel" name="Cancel">
+       <property name="geometry">
+        <rect>
+         <x>290</x>
+         <y>502</y>
+         <width>141</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Inter 28pt</family>
+         <pointsize>19</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QLabel{color: white; background-color: #df2114; border-radius: 20; border: 2px solid #ae2118;} QLabel:focus {border: 2px solid rgb(104,203,255); }</string>
+       </property>
+       <property name="text">
+        <string>Quitter</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="NameEntry">
+       <property name="geometry">
+        <rect>
+         <x>69</x>
+         <y>122</y>
+         <width>712</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Inter 28pt</family>
+         <pointsize>27</pointsize>
+        </font>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::ClickFocus</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QLineEdit{color: black; background-color: rgb(255,255,255); border-radius: 20; padding-left:10; padding-right:10}</string>
+       </property>
+       <property name="placeholderText">
+        <string>Nom</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="Success">
+       <property name="geometry">
+        <rect>
+         <x>69</x>
+         <y>20</y>
+         <width>712</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Inter 28pt</family>
+         <pointsize>40</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color:white; background-color: rgb(98, 184, 55); border: 2px solid rgb(88, 166, 52); border-radius: 10px;</string>
+       </property>
+       <property name="text">
+        <string>Plat créé avec succès !</string>
+       </property>
+       <property name="scaledContents">
+        <bool>true</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar">
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <underline>false</underline>
+    </font>
+   </property>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>868</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <underline>false</underline>
+    </font>
+   </property>
+  </widget>
+ </widget>
+ <tabstops>
+  <tabstop>Starter</tabstop>
+  <tabstop>DishButton</tabstop>
+  <tabstop>Dessert</tabstop>
+  <tabstop>Spring</tabstop>
+  <tabstop>Summer</tabstop>
+  <tabstop>Automn</tabstop>
+  <tabstop>Winter</tabstop>
+ </tabstops>
+ <resources>
+  <include location="../Images.qrc"/>
+ </resources>
+ <connections/>
+</ui>

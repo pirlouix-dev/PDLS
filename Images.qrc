@@ -1,0 +1,21 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource>
+        <file>Images/Logo.png</file>
+        <file>Images/ChoisirMenu.png</file>
+        <file>Images/AjouterPlat.png</file>
+        <file>Images/ModifierPlat.png</file>
+        <file>Images/Parametres.png</file>
+        <file>Images/Accept.png</file>
+        <file>Images/Refuse.png</file>
+        <file>Images/Button.png</file>
+        <file>Images/End_Depr.png</file>
+	<file>Images/BackChoice_Depr.png</file>
+	<file>Images/Update.png</file>
+	<file>Images/Warning.png</file>
+	<file>Images/UpdateLogo.png</file>
+	<file>Images/Resort_Depr.png</file>
+	<file>Fonts/Inter-Bold.ttf</file>
+	<file>Fonts/Inter-Regular.ttf</file>
+    </qresource>
+</RCC>
