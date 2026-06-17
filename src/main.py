@@ -45,13 +45,13 @@ import os
 import sys
 import time
 import traceback
-import sip
 import json
 import webbrowser
 import pyperclip
 import random
 import hashlib
 import DPI
+from PyQt5 import sip
 from datetime import date, datetime
 from packaging.version import Version
 from MainModule import RowFadeController
