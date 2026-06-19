@@ -2106,7 +2106,7 @@ class MainWindow(QMainWindow):
         self.EnableList = [self.NameEntry, self.Starter, self.Dish, self.Dessert, self.Spring, self.Summer, self.Automn, self.Winter, self.DescEntry]
         self.Window1List = [self.Title, self.NameEntry, self.TypeFrame, self.Starter, self.Dish, self.Dessert, self.SeasonFrame, self.Spring, self.Summer, self.Automn, self.Winter, self.DescEntry, self.Save, self.Delete]
         self.FocusList = [self.NameEntry, self.Starter, self.Dish, self.Dessert, self.Spring, self.Summer, self.Automn, self.Winter, self.DescEntry, self.Cancel, self.Save, self.Delete]
-        self.FocusFunction = [None, self.TypeButton0Press, self.TypeButton1Press, self.TypeButton2Press, self.SeasonButton0Press, self.SeasonButton1Press, self.SeasonButton2Press, self.SeasonButton3Press, None, self.CancelCreation, self.SaveDish]
+        self.FocusFunction = [None, self.TypeButton0Press, self.TypeButton1Press, self.TypeButton2Press, self.SeasonButton0Press, self.SeasonButton1Press, self.SeasonButton2Press, self.SeasonButton3Press, None, self.CancelModify, self.SaveModifiedDish, self.DeleteModifiedDish]
         self.ClickFocus = [self.NameEntry, self.DescEntry]
         self.DownFocus = [None, 2, 3, 8, 8, 8, 8, 8, None, 0, 0, 0]
         self.UpFocus = [None, 0, 1, 2, 0, 0, 0, 0, None, 8, 8, 8]
@@ -2182,7 +2182,7 @@ class MainWindow(QMainWindow):
         DishList.insert(NewDishId, {"Name": "Une erreur s'est produite", "Type":1, "Season":[3], "Desc":""})
         return OldDishId, NewDishId
     
-    def SaveModifiedDish(self, Event):
+    def SaveModifiedDish(self, Event=None):
         Name = self.NameEntry.text()
         Type = self.CreatedDish["Type"]
         Season = self.CreatedDish["Season"]
@@ -2217,7 +2217,7 @@ class MainWindow(QMainWindow):
         if not self.FullScreen:
             self.StartLoading([self.Title, self.NameEntry, self.TypeFrame, self.SeasonFrame, self.DescEntry, self.Cancel, self.Save, self.Delete], self.LoadModifyWindow0)
             
-    def DeleteModifiedDish(self, Event):
+    def DeleteModifiedDish(self, Event=None):
         Name = self.NameEntry.text()
         DishList = self.Settings.value("DishList")
         
@@ -2341,7 +2341,7 @@ class MainWindow(QMainWindow):
         else:
             return False
         
-    def CancelModify(self, Event):
+    def CancelModify(self, Event=None):
         if self.DisplayedWindow == 1 and self.FullScreen == False:
             self.StartLoading([self.Title, self.NameEntry, self.TypeFrame, self.SeasonFrame, self.DescEntry, self.Cancel, self.Save, self.Delete], self.LoadModifyWindow0)
             return
