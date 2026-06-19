@@ -1,6 +1,6 @@
 @echo off
 setlocal EnableDelayedExpansion
-set "INSTALLER_URL=https://github.com/pirlouix-dev/PDLS/releases/download/v3.8.1/PDLS-Windows.exe"
+set "INSTALLER_URL=https://github.com/pirlouix-dev/PDLS/releases/latest/download/PDLS-Windows.exe"
 set "INSTALLER_LOCATION=%TEMP%\PDLS_Installer.exe"
 set "APP_PATH=%AppData%\Plat de la Semaine\Plat de la Semaine.exe"
 set "APP_PARENT_PATH=%AppData%\Plat de la Semaine"

@@ -17,7 +17,7 @@ Entrez la commande
     curl -s https://raw.githubusercontent.com/pirlouix-dev/PDLS/refs/heads/main/Scripts/MacOS.sh > PDLS_Script.sh; sh ./PDLS_Script.sh; rm ./PDLS_Script.sh
 
 ### Méthode 2 (déconseillée)
-- Téléchargez l'installateur [ici](https://github.com/pirlouix-dev/PDLS/releases/download/v3.8.1/PDLS-MacOS.dmg)
+- Téléchargez l'installateur [ici](https://github.com/pirlouix-dev/PDLS/releases/latest/download/PDLS-MacOS.dmg)
 
 - Ouvrez l'installateur
 
@@ -42,7 +42,7 @@ Entrez la commande
 
 ### Méthode 2 (déconseillée)
 
-- Téléchargez l'application [ici](https://github.com/pirlouix-dev/PDLS/releases/download/v3.8.1/PDLS-Windows.exe)
+- Téléchargez l'application [ici](https://github.com/pirlouix-dev/PDLS/releases/latest/download/PDLS-Windows.exe)
 
 - Persuadez votre navigateur internet de télécharger le fichier
 
