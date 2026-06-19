@@ -1,5 +1,5 @@
 #!/bin/sh
-INSTALLER_URL="https://github.com/pirlouix-dev/PDLS/releases/download/v3.8.1/PDLS-MacOS.dmg"
+INSTALLER_URL="https://github.com/pirlouix-dev/PDLS/releases/latest/download/PDLS-MacOS.dmg"
 INSTALLER_LOCATION="/private/tmp/PDLS_Installer.dmg"
 OLD_APP_PATH="/Applications/Plat de la Semaine.app"
 NEW_APP_PATH="/Volumes/Plat de la Semaine/Plat de la Semaine.app"
