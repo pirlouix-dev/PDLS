@@ -2145,8 +2145,10 @@ class MainWindow(QMainWindow):
         DishListMaxId = len(DishList) - 1
         
         def AddWidgetFromRange(Start, Stop):
-            for i in range(Start, Stop + 1):
-                DishData = DishList[i]
+            CurrentDishList = self.Settings.value("DishList")
+            CurrentDishListMaxId = len(CurrentDishList) - 1
+            for i in range(Start, min(Stop, CurrentDishListMaxId) + 1):
+                DishData = CurrentDishList[i]
                 Dish = self.CreateDishUi(DishData["Name"], DishData["Type"], DishData["Season"], DishData["Desc"], True)
                 self.ScrollVBox.addWidget(Dish.findChild(QWidget, "Dish"))
         
