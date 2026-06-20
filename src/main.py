@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 # Fait :
-# - Lors d'un bug report, envoyer aussi la plateforme
-# - Réduire la taille du texte dans les descriptions dans "Modifier" et "Créer" un plat
 
 # Bugs connus :
 
@@ -1893,9 +1891,9 @@ class MainWindow(QMainWindow):
                 RadioButton.setAutoExclusive(False)
                 RadioButton.setChecked(False)
                 RadioButton.setAutoExclusive(True)
-        for SeasonAndFunc in [(self.Spring, self.SeasonButton0Press), (self.Summer, self.SeasonButton1Press), (self.Automn, self.SeasonButton2Press), (self.Winter, self.SeasonButton3Press)]:
-            if SeasonAndFunc[0].property("Activated") == True:
-                SeasonAndFunc[1]()
+        for SeasonButton in [self.Spring, self.Summer, self.Automn, self.Winter]:
+            if SeasonButton.property("Activated") == True:
+                self.EditSelectedButton(SeasonButton, False)
         self.DescEntry.setPlainText("")
         self.CreatedDish = {'Name': "", 'Type': None, 'Season': [], 'Desc': ""}
     
