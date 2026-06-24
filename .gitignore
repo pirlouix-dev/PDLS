@@ -1,5 +1,12 @@
-*.pyc
 UTP
 .DS_Store
 UpdateToPython
+
+*.dmg
+*.app
+*.exe
+*.pyc
+
+build/
+dist/
 venv/

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/matheogomez/Desktop/PDLS/ui/ModifyMenu.ui'
+# Form implementation generated from reading ui file './ui/ModifyMenu.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
