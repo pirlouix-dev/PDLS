@@ -16,7 +16,7 @@ build: build-macos build-windows
 
 build-macos:
 	@echo "Building macOS application..."
-	source $(VENV_MAC)/bin/activate && pyinstaller --clean PDLS.spec
+	source $(VENV_MAC)/bin/activate && pyinstaller --clean PDLS\ Mac.spec
 	@echo "Creating DMG installer..."
 	$(CREATE_DMG) --overwrite dist/Plat\ de\ la\ Semaine.app .
 
