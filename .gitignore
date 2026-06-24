@@ -1,6 +1,7 @@
 UTP
 .DS_Store
 UpdateToPython
+Images_rc.py
 
 *.dmg
 *.app
