@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/Users/matheogomez/Desktop/PDLS/ui/DishWithSettings.ui'
+# Form implementation generated from reading ui file './ui/DishWithSettings.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
