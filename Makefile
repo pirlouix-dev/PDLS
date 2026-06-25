@@ -14,13 +14,13 @@ all: build
 
 build: build-macos build-windows
 
-build-macos:
+build-macos: images
 	@echo "Building macOS application..."
 	source $(VENV_MAC)/bin/activate && pyinstaller --clean PDLS\ Mac.spec
 	@echo "Creating DMG installer..."
 	$(CREATE_DMG) --overwrite dist/Plat\ de\ la\ Semaine.app .
 
-build-windows:
+build-windows: images
 	@echo "Building Windows application..."
 	wine $(WINE_PYINSTALLER) --clean PDLS\ windows.spec
 
@@ -30,4 +30,4 @@ images:
 
 clean:
 	@echo "Cleaning build artifacts..."
-	rm -rf dist build *.dmg
+	rm -rf dist build *.dmg src/Images_rc.py
