@@ -50,6 +50,16 @@ import random
 import hashlib
 import DPI
 from PyQt5 import sip
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Debugging: Print environment variables if PDLS_DEBUG_ENV is set
+if os.getenv("PDLS_DEBUG_ENV") == "1":
+    print(f"APP_VERSION: {os.getenv("APP_VERSION")}", file=sys.stderr)
+    print(f"LINE_COUNT: {os.getenv("LINE_COUNT")}", file=sys.stderr)
+    print(f"API_URL: {os.getenv("API_URL")}", file=sys.stderr)
+    sys.exit(0) # Exit after printing to avoid GUI startup
 from datetime import date, datetime
 from packaging.version import Version
 from MainModule import RowFadeController
@@ -80,8 +90,8 @@ Loading = False
 FirstStart = True
 KeyOverride = False
 KeyOverrideFunc = None
-AppVersion = "3.8.1"
-LineCount = "3,000"
+AppVersion = os.getenv("APP_VERSION", "0.0.0")
+LineCount = os.getenv("LINE_COUNT", "UNKNOWN")
 Timestamp = 1749062742
 
 UpdateCommands = {
@@ -90,7 +100,7 @@ UpdateCommands = {
     }
 AutoUpdateSupport = sys.platform in ["darwin", "win32"]
 
-APIUrl = "https://676d02470e299dd2ddfe1998.mockapi.io/PDLS/v1"
+APIUrl = os.getenv("API_URL", "")
 RequestSuccessful = False
 FeedbackURL = None
 LatestVersion = None
