@@ -31,7 +31,7 @@
 
 # Check-liste mises à jour
 # - Désactiver les mode Debug, Force update et No update error
-# - Changer la version, le nombre de ligne et le timestamp dans le code
+# - Mettre à jour les valeurs dans .env (APP_VERSION, APP_LINE_COUNT, BUILD_TIMESTAMP)
 # - Sauvegarder les modifications
 # - Créer les fichiers d'installation
 # - Commit la version sur Github
