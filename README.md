@@ -57,6 +57,5 @@ Avec un raccourci dans %APPDATA%\Microsoft\Windows\Start Menu\Programs
 L'installation manuelle n'est pas supportée par l'application sur les autres systèmes.
 
 Vous pouvez :
-- Utiliser les stores si disponibles (Google Play, App Store)
 - Utiliser une couche de compatibilité (Wine)
 - Utiliser un émulateur (VirtualBox)
