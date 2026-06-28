@@ -68,10 +68,11 @@ from PyQt5.QtGui import QFontMetrics, QResizeEvent, QFontDatabase
 from PyQt5.QtCore import QPoint, QSize, QPropertyAnimation, Qt, QSettings, QTimer, QObject, QEvent, pyqtSignal, QUrl, QByteArray
 from PyQt5.QtNetwork import QNetworkRequest, QNetworkAccessManager, QNetworkReply
 
-script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-load_dotenv(os.path.join(script_dir, '.env'))
 if getattr(sys, 'frozen', False):
     load_dotenv(os.path.join(sys._MEIPASS, '.env'))
+else:
+    script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    load_dotenv(os.path.join(script_dir, '.env'))
 
 DEBUG_MODE = False
 FORCE_UPDATE = False
