@@ -11,3 +11,4 @@ Images_rc.py
 build/
 dist/
 venv/
+.env
