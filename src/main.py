@@ -72,7 +72,6 @@ script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 load_dotenv(os.path.join(script_dir, '.env'))
 if getattr(sys, 'frozen', False):
     load_dotenv(os.path.join(sys._MEIPASS, '.env'))
-    load_dotenv(os.path.join(os.path.dirname(sys.executable), '.env'))
 
 DEBUG_MODE = False
 FORCE_UPDATE = False
