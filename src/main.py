@@ -31,7 +31,7 @@
 
 # Check-liste mises à jour
 # - Désactiver les mode Debug, Force update et No update error
-# - Changer la version, le nombre de ligne et le timestamp dans le code
+# - Mettre à jour les valeurs dans .env (APP_VERSION, APP_LINE_COUNT, BUILD_TIMESTAMP)
 # - Sauvegarder les modifications
 # - Créer les fichiers d'installation
 # - Commit la version sur Github
@@ -49,6 +49,7 @@ import pyperclip
 import random
 import hashlib
 import DPI
+from dotenv import load_dotenv
 from PyQt5 import sip
 from datetime import date, datetime
 from packaging.version import Version
@@ -67,6 +68,12 @@ from PyQt5.QtGui import QFontMetrics, QResizeEvent, QFontDatabase
 from PyQt5.QtCore import QPoint, QSize, QPropertyAnimation, Qt, QSettings, QTimer, QObject, QEvent, pyqtSignal, QUrl, QByteArray
 from PyQt5.QtNetwork import QNetworkRequest, QNetworkAccessManager, QNetworkReply
 
+if getattr(sys, 'frozen', False):
+    load_dotenv(os.path.join(sys._MEIPASS, '.env'))
+else:
+    ScriptDir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    load_dotenv(os.path.join(ScriptDir, '.env'))
+
 DEBUG_MODE = False
 FORCE_UPDATE = False
 NO_UPDATE_ERROR = False
@@ -80,17 +87,19 @@ Loading = False
 FirstStart = True
 KeyOverride = False
 KeyOverrideFunc = None
-AppVersion = "3.8.1"
-LineCount = "3,000"
-Timestamp = 1749062742
+AppVersion = os.getenv("APP_VERSION", "3.0.0")
+LineCount = os.getenv("APP_LINE_COUNT", "0")
+Timestamp = int(os.getenv("BUILD_TIMESTAMP", "0"))
 
+MacOSUpdateUrl = os.getenv("MACOS_UPDATE_SCRIPT_URL", "https://raw.githubusercontent.com/pirlouix-dev/PDLS/refs/heads/main/Scripts/MacOS.sh")
+WindowsUpdateUrl = os.getenv("WINDOWS_UPDATE_SCRIPT_URL", "https://raw.githubusercontent.com/pirlouix-dev/PDLS/refs/heads/main/Scripts/Windows.bat")
 UpdateCommands = {
-    "darwin": "(curl -s https://raw.githubusercontent.com/pirlouix-dev/PDLS/refs/heads/main/Scripts/MacOS.sh > /private/tmp/PDLS_Script.sh; sh /private/tmp/PDLS_Script.sh; rm /private/tmp/PDLS_Script.sh) > /dev/null 2>&1 &",
-    "win32": "start /min cmd /c \"curl -s -o PDLS_Installer.bat https://raw.githubusercontent.com/pirlouix-dev/PDLS/refs/heads/main/Scripts/Windows.bat && PDLS_Installer.bat && del PDLS_Installer.bat >nul 2>&1\""
+    "darwin": f"(curl -s {MacOSUpdateUrl} > /private/tmp/PDLS_Script.sh; sh /private/tmp/PDLS_Script.sh; rm /private/tmp/PDLS_Script.sh) > /dev/null 2>&1 &",
+    "win32": f'start /min cmd /c "curl -s -o PDLS_Installer.bat {WindowsUpdateUrl} && PDLS_Installer.bat && del PDLS_Installer.bat >nul 2>&1"'
     }
 AutoUpdateSupport = sys.platform in ["darwin", "win32"]
 
-APIUrl = "https://676d02470e299dd2ddfe1998.mockapi.io/PDLS/v1"
+APIUrl = os.getenv("API_BASE_URL", "https://676d02470e299dd2ddfe1998.mockapi.io/PDLS/v1")
 RequestSuccessful = False
 FeedbackURL = None
 LatestVersion = None
