@@ -71,8 +71,8 @@ from PyQt5.QtNetwork import QNetworkRequest, QNetworkAccessManager, QNetworkRepl
 if getattr(sys, 'frozen', False):
     load_dotenv(os.path.join(sys._MEIPASS, '.env'))
 else:
-    script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    load_dotenv(os.path.join(script_dir, '.env'))
+    ScriptDir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    load_dotenv(os.path.join(ScriptDir, '.env'))
 
 DEBUG_MODE = False
 FORCE_UPDATE = False
@@ -91,11 +91,11 @@ AppVersion = os.getenv("APP_VERSION", "3.0.0")
 LineCount = os.getenv("APP_LINE_COUNT", "0")
 Timestamp = int(os.getenv("BUILD_TIMESTAMP", "0"))
 
-macos_update_url = os.getenv("MACOS_UPDATE_SCRIPT_URL", "https://raw.githubusercontent.com/pirlouix-dev/PDLS/refs/heads/main/Scripts/MacOS.sh")
-windows_update_url = os.getenv("WINDOWS_UPDATE_SCRIPT_URL", "https://raw.githubusercontent.com/pirlouix-dev/PDLS/refs/heads/main/Scripts/Windows.bat")
+MacOSUpdateUrl = os.getenv("MACOS_UPDATE_SCRIPT_URL", "https://raw.githubusercontent.com/pirlouix-dev/PDLS/refs/heads/main/Scripts/MacOS.sh")
+WindowsUpdateUrl = os.getenv("WINDOWS_UPDATE_SCRIPT_URL", "https://raw.githubusercontent.com/pirlouix-dev/PDLS/refs/heads/main/Scripts/Windows.bat")
 UpdateCommands = {
-    "darwin": f"(curl -s {macos_update_url} > /private/tmp/PDLS_Script.sh; sh /private/tmp/PDLS_Script.sh; rm /private/tmp/PDLS_Script.sh) > /dev/null 2>&1 &",
-    "win32": f'start /min cmd /c "curl -s -o PDLS_Installer.bat {windows_update_url} && PDLS_Installer.bat && del PDLS_Installer.bat >nul 2>&1"'
+    "darwin": f"(curl -s {MacOSUpdateUrl} > /private/tmp/PDLS_Script.sh; sh /private/tmp/PDLS_Script.sh; rm /private/tmp/PDLS_Script.sh) > /dev/null 2>&1 &",
+    "win32": f'start /min cmd /c "curl -s -o PDLS_Installer.bat {WindowsUpdateUrl} && PDLS_Installer.bat && del PDLS_Installer.bat >nul 2>&1"'
     }
 AutoUpdateSupport = sys.platform in ["darwin", "win32"]
 
