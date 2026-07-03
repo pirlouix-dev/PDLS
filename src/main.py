@@ -517,8 +517,29 @@ class MainWindow(QMainWindow):
             self.EndLoading(self.MainMenuWidgetList)
      
     def ChooseMenuClicked(self, Event):
+        if len(self.Settings.value("DishList")) == 0:
+            self.ShowNoDishMessage()
+            return
+        
         self.StartLoading(self.MainMenuWidgetList, self.LoadChooseMenu)
         
+    def ShowNoDishMessage(self):
+        global KeyOverride
+        KeyOverride = False
+        
+        MessageBox = QMessageBox()
+        MessageBox.setWindowTitle("Aucun plat")
+        MessageBox.setText("""<p style='text-align: center;'><img src=':/Images/Warning.png' alt='' width='100' height='100'></p>
+                               <p style='text-align: center;'>Vous n'avez encore aucun plat !</p>
+                               <p style='text-align: center;'>Créez-en un avant d'utiliser le menu.</p>""")
+        OkButton = MessageBox.addButton('Ok', QMessageBox.YesRole)
+        StyleSheet = MessageStyleSheet(MessageBox)
+
+        OkButton.setStyleSheet(StyleSheet)
+
+        MessageBox.exec()
+        KeyOverride = True
+
     def CreateMenuClicked(self, Event):
         self.StartLoading(self.MainMenuWidgetList, self.LoadCreateDish)
 
