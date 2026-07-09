@@ -364,12 +364,9 @@ class MainWindow(QMainWindow):
         WindowSize = QSize(self.width(), self.height())
         self.resizeEvent(QResizeEvent(WindowSize, WindowSize))
         
-    def HandleAPIData(self, Reply):
-        parse_api_reply(Reply)
-
     def RetreiveAPIData(self):
         self._api_manager = APIManager(self)
-        self._api_manager.retrieve(callback=self.HandleAPIData)
+        self._api_manager.retrieve()
         
     def CreateDishListBackup(self, DishList):
         BackupList = self.Settings.value("DishBackup") or {}

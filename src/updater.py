@@ -66,7 +66,7 @@ def Warn(*args):
     print("PDLS/[Warn]", *args, file=sys.stderr)
 
 
-def IsUpdateAvailable(force_update=False, app_version="3.0.0"):
+def IsUpdateAvailable(force_update, app_version):
     """Return True when a newer version exists on the API side."""
     if not RequestSuccessful:
         return False
@@ -76,7 +76,7 @@ def IsUpdateAvailable(force_update=False, app_version="3.0.0"):
 def OSName(platform_name):
     """Human-readable OS name."""
     if platform_name == "darwin":
-        return "macOS"
+        return "MacOS"
     elif platform_name == "win32":
         return "Windows"
     return platform_name
@@ -100,16 +100,10 @@ class APIManager(QObject):
 
     # -- public API ---------------------------------------------------------
 
-    def retrieve(self, callback=None):
-        """Start the async API GET.
-
-        *callback* — if provided, it is connected to ``_manager.finished``
-        INSTEAD of ``_on_reply``, preserving the original main.py pattern.
-        """
+    def retrieve(self):
+        """Start the async API GET."""
         request = QNetworkRequest(QUrl(APIUrl))
         request.setTransferTimeout(5000)
-        if callback is not None:
-            self._manager.finished.connect(callback)
         self._manager.get(request)
 
     # -- internal ------------------------------------------------------------
