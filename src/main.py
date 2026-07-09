@@ -31,7 +31,7 @@
 
 # Check-liste mises à jour
 # - Désactiver les mode Debug, Force update et No update error
-# - Mettre à jour les valeurs dans .env (APP_VERSION, APP_LINE_COUNT, BUILD_TIMESTAMP)
+# - Mettre à jour les valeurs dans main.py (AppVersion, LineCount) et .env (BUILD_TIMESTAMP)
 # - Sauvegarder les modifications
 # - Créer les fichiers d'installation
 # - Commit la version sur Github
@@ -87,8 +87,8 @@ Loading = False
 FirstStart = True
 KeyOverride = False
 KeyOverrideFunc = None
-AppVersion = os.getenv("APP_VERSION", "3.0.0")
-LineCount = os.getenv("APP_LINE_COUNT", "0")
+AppVersion = os.getenv("APP_VERSION", "3.8.2")
+LineCount = os.getenv("APP_LINE_COUNT", "3,052")
 Timestamp = int(os.getenv("BUILD_TIMESTAMP", "0"))
 
 MacOSUpdateUrl = os.getenv("MACOS_UPDATE_SCRIPT_URL", "https://raw.githubusercontent.com/pirlouix-dev/PDLS/refs/heads/main/Scripts/MacOS.sh")
