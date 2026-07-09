@@ -67,6 +67,7 @@ from PyQt5.QtTest import QTest
 from PyQt5.QtGui import QFontMetrics, QResizeEvent, QFontDatabase
 from PyQt5.QtCore import QPoint, QSize, QPropertyAnimation, Qt, QSettings, QTimer, QObject, QEvent, pyqtSignal, QUrl, QByteArray
 from PyQt5.QtNetwork import QNetworkRequest, QNetworkAccessManager, QNetworkReply
+import updater
 
 if getattr(sys, 'frozen', False):
     load_dotenv(os.path.join(sys._MEIPASS, '.env'))
@@ -91,20 +92,7 @@ AppVersion = os.getenv("APP_VERSION", "3.0.0")
 LineCount = os.getenv("APP_LINE_COUNT", "0")
 Timestamp = int(os.getenv("BUILD_TIMESTAMP", "0"))
 
-MacOSUpdateUrl = os.getenv("MACOS_UPDATE_SCRIPT_URL", "https://raw.githubusercontent.com/pirlouix-dev/PDLS/refs/heads/main/Scripts/MacOS.sh")
-WindowsUpdateUrl = os.getenv("WINDOWS_UPDATE_SCRIPT_URL", "https://raw.githubusercontent.com/pirlouix-dev/PDLS/refs/heads/main/Scripts/Windows.bat")
-UpdateCommands = {
-    "darwin": f"(curl -s {MacOSUpdateUrl} > /private/tmp/PDLS_Script.sh; sh /private/tmp/PDLS_Script.sh; rm /private/tmp/PDLS_Script.sh) > /dev/null 2>&1 &",
-    "win32": f'start /min cmd /c "curl -s -o PDLS_Installer.bat {WindowsUpdateUrl} && PDLS_Installer.bat && del PDLS_Installer.bat >nul 2>&1"'
-    }
-AutoUpdateSupport = sys.platform in ["darwin", "win32"]
 
-APIUrl = os.getenv("API_BASE_URL", "https://676d02470e299dd2ddfe1998.mockapi.io/PDLS/v1")
-RequestSuccessful = False
-FeedbackURL = None
-LatestVersion = None
-DownloadFolder = None
-UpdateDescription = None
 
 ScreenScaleFactor = DPI.GetDPI()/127.75
 ScreenScaleFactor = 1 if ScreenScaleFactor <= 1.1 else ScreenScaleFactor
@@ -185,11 +173,7 @@ def MessageStyleSheet(MessageBox):
         }
     """
     
-def IsUpdateAvailable():
-    if not RequestSuccessful:
-        return False
-    
-    return FORCE_UPDATE or Version(AppVersion) < Version(LatestVersion)
+
     
 def TwoChar(Num):
     Num = str(Num)
@@ -244,8 +228,7 @@ def DEBUG_APICrash():
         Warn("APICrash can't be used")
         return
     
-    global APIUrl
-    APIUrl = "https://10.255.255.1"
+    updater.APIUrl = "https://10.255.255.1"
     
 def DEBUG_Log(Message):
     if not DEBUG_MODE:
@@ -377,28 +360,10 @@ class MainWindow(QMainWindow):
         self.resizeEvent(QResizeEvent(WindowSize, WindowSize))
         
     def HandleAPIData(self, Reply):
-        global RequestSuccessful, FeedbackURL, LatestVersion, DownloadFolder, UpdateDescription
-        
-        Error = Reply.error()
-        if Error == QNetworkReply.NoError:
-            AnswerJson = str(Reply.readAll(), "utf-8")
-            Answer = json.loads(AnswerJson)[0]
-            
-            FeedbackURL = Answer["feedback-url"]
-            LatestVersion = Answer["latest-version"]
-            DownloadFolder = Answer["download-folder"]
-            UpdateDescription = Answer["update-description"]
-            RequestSuccessful = True
-        else:
-            RequestSuccessful = False
-            Warn("Failed to retreive data")
-     
+        updater.HandleAPIData(Reply)
+
     def RetreiveAPIData(self):
-        self.Request = QNetworkRequest(QUrl(APIUrl))
-        self.Request.setTransferTimeout(5000)
-        self.NetworkManager = QNetworkAccessManager()
-        self.NetworkManager.finished.connect(self.HandleAPIData)
-        self.NetworkManager.get(self.Request)
+        updater.RetreiveAPIData()
         
     def CreateDishListBackup(self, DishList):
         BackupList = self.Settings.value("DishBackup") or {}
@@ -612,7 +577,7 @@ class MainWindow(QMainWindow):
         if Answer == 1:
             return
         
-        webbrowser.open(DownloadFolder)
+        webbrowser.open(updater.DownloadFolder)
         self.closeEvent = self.NoCloseEvent
         self.close()
 
@@ -1422,7 +1387,7 @@ class MainWindow(QMainWindow):
            self.StartLoading([self.CurrentDish, self.ScrollArea, self.AcceptButton, self.RefuseButton, self.UndoButton, self.UndoText, self.EndButton, self.EndText, self.CountFrame, self.LeaveChooseButton], self.LoadMainMenu)
            return
        
-        if not IsUpdateAvailable():
+        if not updater.IsUpdateAvailable(AppVersion, FORCE_UPDATE):
             self.StartLoading([self.ScrollArea, self.AcceptButton, self.RefuseButton, self.BackChoiceButton, self.BackChoiceText, self.CountFrame, self.LeaveChooseButton], self.LoadMainMenu)
             return
         
@@ -1540,7 +1505,7 @@ class MainWindow(QMainWindow):
     def ShowQuitUpdate(self):
        global KeyOverride
        KeyOverride = False
-       FormatedUpdateDescription = "<br>" + UpdateDescription.replace("\n", "</br>\n<br>") + "</br>"
+       FormatedUpdateDescription = "<br>" + updater.UpdateDescription.replace("\n", "</br>\n<br>") + "</br>"
         
        MessageBox = QMessageBox()
        MessageBox.setWindowTitle("Attention")
@@ -1571,7 +1536,7 @@ class MainWindow(QMainWindow):
     def ShowUpdateConfirm(self, Event=None):
         global KeyOverride
         KeyOverride = False
-        FormatedUpdateDescription = "<br>" + UpdateDescription.replace("\n", "</br>\n<br>") + "</br>"
+        FormatedUpdateDescription = "<br>" + updater.UpdateDescription.replace("\n", "</br>\n<br>") + "</br>"
         
         MessageBox = QMessageBox()
         MessageBox.setWindowTitle("Attention")
@@ -1600,7 +1565,7 @@ class MainWindow(QMainWindow):
         self.Settings.setValue("WindowSize", (WindowSizeX, WindowSizeY))
         self.Settings.setValue("WindowPos", (WindowPosX, WindowPosY))
         
-        if IsUpdateAvailable() == False:
+        if updater.IsUpdateAvailable(AppVersion, FORCE_UPDATE) == False:
            KeepWindow = self.ShowQuitConfirm()
         else:
             KeepWindow = self.ShowQuitUpdate()
@@ -2049,7 +2014,7 @@ class MainWindow(QMainWindow):
         self.Settings.setValue("WindowSize", (WindowSizeX, WindowSizeY))
         self.Settings.setValue("WindowPos", (WindowPosX, WindowPosY))
         
-        if IsUpdateAvailable():
+        if updater.IsUpdateAvailable(AppVersion, FORCE_UPDATE):
             KeepWindow = self.ShowQuitUpdate()
         elif not self.AreEntryEmpty():
             KeepWindow = self.ShowCreateQuitConfirm()
@@ -2520,7 +2485,7 @@ class MainWindow(QMainWindow):
         self.Settings.setValue("WindowSize", (WindowSizeX, WindowSizeY))
         self.Settings.setValue("WindowPos", (WindowPosX, WindowPosY))
         
-        if IsUpdateAvailable():
+        if updater.IsUpdateAvailable(AppVersion, FORCE_UPDATE):
             KeepWindow = self.ShowQuitUpdate()
         elif self.HasDishBeenModified():
             KeepWindow = self.ShowCreateQuitConfirm()
@@ -2679,11 +2644,11 @@ class MainWindow(QMainWindow):
     
     def ShowMenu2(self, Event=None):
         self.CurrentButtonChanged(2)
-        if not RequestSuccessful:
+        if not updater.RequestSuccessful:
             self.NetworkError.show()
             return
         
-        if IsUpdateAvailable():
+        if updater.IsUpdateAvailable(AppVersion, FORCE_UPDATE):
             self.FeedbackError.show()
             return
         
@@ -2702,15 +2667,15 @@ class MainWindow(QMainWindow):
        
     def ShowMenu4(self, Event=None):
         self.CurrentButtonChanged(4)
-        if not RequestSuccessful:
+        if not updater.RequestSuccessful:
             self.NetworkError.show()
             return
         
-        self.LatestVersion.setText(f"Dernière version disponible : <b>{LatestVersion}</b>")
-        self.UpdateDesc.setText("Nouveautés :\n" + UpdateDescription)
+        self.LatestVersion.setText(f"Dernière version disponible : <b>{updater.LatestVersion}</b>")
+        self.UpdateDesc.setText("Nouveautés :\n" + updater.UpdateDescription)
         
         self.LatestVersion.show()
-        if IsUpdateAvailable():
+        if updater.IsUpdateAvailable(AppVersion, FORCE_UPDATE):
             self.UpdateButton.show()
             self.UpdateText.show()
             self.UpdateDesc.show()
@@ -2855,7 +2820,7 @@ class MainWindow(QMainWindow):
         self.FeedbackOnCooldown = True
         self.UpdateFeedbackButton()
         
-        self.Request = QNetworkRequest(QUrl(FeedbackURL))
+        self.Request = QNetworkRequest(QUrl(updater.FeedbackURL))
         self.Request.setTransferTimeout(5000)
         self.Request.setHeader(QNetworkRequest.ContentTypeHeader, "application/json")
         self.NetworkManager = QNetworkAccessManager()
@@ -2948,13 +2913,13 @@ class MainWindow(QMainWindow):
         
         
     def InstallUpdate(self, Event=None):
-        if not AutoUpdateSupport:
+        if not updater.AutoUpdateSupport:
             self.ManualUpdate()
             return
         
         self.Settings.setValue("LastVersion", AppVersion)
-        self.Settings.setValue("ExpectedVersion", LatestVersion)
-        os.system(UpdateCommands[sys.platform])
+        self.Settings.setValue("ExpectedVersion", updater.LatestVersion)
+        os.system(updater.UpdateCommands[sys.platform])
         self.closeEvent = self.NoCloseEvent
         self.close()
         
@@ -2979,10 +2944,10 @@ class MainWindow(QMainWindow):
             return
         
         if Answer == 0:
-            pyperclip.copy(DownloadFolder)
+            pyperclip.copy(updater.DownloadFolder)
             return
         
-        webbrowser.open(DownloadFolder)
+        webbrowser.open(updater.DownloadFolder)
         self.closeEvent = self.NoCloseEvent
         self.close()
             
