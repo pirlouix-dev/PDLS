@@ -18,7 +18,22 @@ build-macos: images
 	@echo "Building macOS application..."
 	source $(VENV_MAC)/bin/activate && pyinstaller --clean PDLS\ Mac.spec
 	@echo "Creating DMG installer..."
-	$(CREATE_DMG) --overwrite dist/Plat\ de\ la\ Semaine.app .
+	$(eval APPVERSION := $(shell grep APP_VERSION .env | cut -d= -f2))
+	rm -rf /tmp/pdls-dmg
+	mkdir -p /tmp/pdls-dmg
+	cp -R "dist/Plat de la Semaine.app" /tmp/pdls-dmg/
+	$(CREATE_DMG) \
+		--volname "Plat de la Semaine" \
+		--volicon "Icon.icns" \
+		--window-pos 200 120 \
+		--window-size 600 400 \
+		--icon-size 100 \
+		--icon "Plat de la Semaine.app" 175 120 \
+		--app-drop-link 425 120 \
+		--overwrite \
+		"Plat de la Semaine $(APPVERSION).dmg" \
+		/tmp/pdls-dmg/
+	rm -rf /tmp/pdls-dmg
 
 build-windows: images
 	@echo "Building Windows application..."

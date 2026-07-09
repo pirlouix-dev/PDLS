@@ -20,7 +20,7 @@ check_error() {
 
 # Downloading
 echo "${GREEN_START}Téléchargement de Plat de la Semaine${COLOR_STOP}"
-curl -s -o "$INSTALLER_LOCATION" "$INSTALLER_URL"
+curl -sL -o "$INSTALLER_LOCATION" "$INSTALLER_URL"
 check_error "Échec du téléchargement. Vérifiez votre connexion Internet."
 
 # Ensure the installer was actually downloaded
