@@ -13,7 +13,7 @@ import webbrowser
 from packaging.version import Version
 from PyQt5.QtCore import QObject, QUrl
 from PyQt5.QtNetwork import QNetworkRequest, QNetworkAccessManager, QNetworkReply
-from PyQt5.QtWidgets import QMessageBox
+import pyperclip
 
 
 # ---------------------------------------------------------------------------
@@ -62,8 +62,8 @@ UpdateDescription = None
 # ---------------------------------------------------------------------------
 
 def Warn(*args):
-    """Print a warning to stderr."""
-    print("PDLS/[Warn]", *args, file=sys.stderr)
+    """Print a warning to stderr in a clear format."""
+    print("--------\nWarning: ", *args, "\n--------", file=sys.stderr)
 
 
 def IsUpdateAvailable(force_update, app_version):
@@ -88,9 +88,7 @@ def OSName(platform_name):
 
 class APIManager(QObject):
     """Handles the single API request that fetches app metadata.
-
-    Keeps the QNetworkAccessManager alive long enough for the async reply.
-    Emits ``data_ready`` with the parsed dict or ``data_failed`` on error.
+    Updates module-level globals via parse_api_reply().
     """
 
     def __init__(self, parent=None):
@@ -151,7 +149,11 @@ def parse_api_reply(reply):
 
 def run_update_command():
     """Execute the platform-specific update shell command (fire-and-forget)."""
-    os.system(UpdateCommands[sys.platform])
+    cmd = UpdateCommands.get(sys.platform)
+    if cmd is None:
+        Warn(f"No update command defined for platform {sys.platform}")
+        return
+    os.system(cmd)
 
 
 def open_manual_update_page(download_folder):
@@ -162,5 +164,4 @@ def open_manual_update_page(download_folder):
 
 def copy_download_link(download_folder):
     """Copy download URL to clipboard."""
-    import pyperclip
     pyperclip.copy(download_folder)

@@ -1135,7 +1135,7 @@ class MainWindow(QMainWindow):
             self.EndText.setVisible(False)
             self.BackChoiceButton.setVisible(True)
             self.BackChoiceText.setVisible(True)
-            self.UpdateButton.setVisible(IsUpdateAvailable())
+            self.UpdateButton.setVisible(IsUpdateAvailable(FORCE_UPDATE, AppVersion))
             self.UpdateText.setVisible(self.UpdateButton.isVisible())
             self.AnimCompleted()
             self.RemoveGlitches()
@@ -1390,7 +1390,7 @@ class MainWindow(QMainWindow):
            self.StartLoading([self.CurrentDish, self.ScrollArea, self.AcceptButton, self.RefuseButton, self.UndoButton, self.UndoText, self.EndButton, self.EndText, self.CountFrame, self.LeaveChooseButton], self.LoadMainMenu)
            return
        
-        if not IsUpdateAvailable():
+        if not IsUpdateAvailable(FORCE_UPDATE, AppVersion):
             self.StartLoading([self.ScrollArea, self.AcceptButton, self.RefuseButton, self.BackChoiceButton, self.BackChoiceText, self.CountFrame, self.LeaveChooseButton], self.LoadMainMenu)
             return
         
@@ -1568,7 +1568,7 @@ class MainWindow(QMainWindow):
         self.Settings.setValue("WindowSize", (WindowSizeX, WindowSizeY))
         self.Settings.setValue("WindowPos", (WindowPosX, WindowPosY))
         
-        if IsUpdateAvailable() == False:
+        if IsUpdateAvailable(FORCE_UPDATE, AppVersion) == False:
            KeepWindow = self.ShowQuitConfirm()
         else:
             KeepWindow = self.ShowQuitUpdate()
@@ -2017,7 +2017,7 @@ class MainWindow(QMainWindow):
         self.Settings.setValue("WindowSize", (WindowSizeX, WindowSizeY))
         self.Settings.setValue("WindowPos", (WindowPosX, WindowPosY))
         
-        if IsUpdateAvailable():
+        if IsUpdateAvailable(FORCE_UPDATE, AppVersion):
             KeepWindow = self.ShowQuitUpdate()
         elif not self.AreEntryEmpty():
             KeepWindow = self.ShowCreateQuitConfirm()
@@ -2488,7 +2488,7 @@ class MainWindow(QMainWindow):
         self.Settings.setValue("WindowSize", (WindowSizeX, WindowSizeY))
         self.Settings.setValue("WindowPos", (WindowPosX, WindowPosY))
         
-        if IsUpdateAvailable():
+        if IsUpdateAvailable(FORCE_UPDATE, AppVersion):
             KeepWindow = self.ShowQuitUpdate()
         elif self.HasDishBeenModified():
             KeepWindow = self.ShowCreateQuitConfirm()
@@ -2651,7 +2651,7 @@ class MainWindow(QMainWindow):
             self.NetworkError.show()
             return
         
-        if IsUpdateAvailable():
+        if IsUpdateAvailable(FORCE_UPDATE, AppVersion):
             self.FeedbackError.show()
             return
         
@@ -2678,7 +2678,7 @@ class MainWindow(QMainWindow):
         self.UpdateDesc.setText("Nouveautés :\n" + UpdateDescription)
         
         self.LatestVersion.show()
-        if IsUpdateAvailable():
+        if IsUpdateAvailable(FORCE_UPDATE, AppVersion):
             self.UpdateButton.show()
             self.UpdateText.show()
             self.UpdateDesc.show()
