@@ -18,7 +18,6 @@ build-macos: images
 	@echo "Building macOS application..."
 	source $(VENV_MAC)/bin/activate && pyinstaller --clean PDLS\ Mac.spec
 	@echo "Creating DMG installer..."
-	$(eval APPVERSION := $(shell grep APP_VERSION .env | cut -d= -f2))
 	rm -rf /tmp/pdls-dmg
 	mkdir -p /tmp/pdls-dmg
 	cp -R "dist/Plat de la Semaine.app" /tmp/pdls-dmg/
@@ -31,7 +30,7 @@ build-macos: images
 		--icon "Plat de la Semaine.app" 175 120 \
 		--app-drop-link 425 120 \
 		--overwrite \
-		"Plat de la Semaine $(APPVERSION).dmg" \
+		"PDLS-MacOS.dmg" \
 		/tmp/pdls-dmg/
 	rm -rf /tmp/pdls-dmg
 
@@ -45,4 +44,4 @@ images:
 
 clean:
 	@echo "Cleaning build artifacts..."
-	rm -rf dist build *.dmg src/Images_rc.py
+	rm -rf dist build PDLS-MacOS.dmg PDLS-Windows.exe src/Images_rc.py

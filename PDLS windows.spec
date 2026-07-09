@@ -21,7 +21,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='Plat de la Semaine',
+    name='PDLS-Windows',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
