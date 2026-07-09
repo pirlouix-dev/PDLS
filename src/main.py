@@ -52,7 +52,6 @@ import DPI
 from dotenv import load_dotenv
 from PyQt5 import sip
 from datetime import date, datetime
-from packaging.version import Version
 from MainModule import RowFadeController
 from Dish import Ui_Form as DishModule
 from DishWithSettings import Ui_Form as SettingsDishModule
@@ -67,6 +66,25 @@ from PyQt5.QtTest import QTest
 from PyQt5.QtGui import QFontMetrics, QResizeEvent, QFontDatabase
 from PyQt5.QtCore import QPoint, QSize, QPropertyAnimation, Qt, QSettings, QTimer, QObject, QEvent, pyqtSignal, QUrl, QByteArray
 from PyQt5.QtNetwork import QNetworkRequest, QNetworkAccessManager, QNetworkReply
+from packaging.version import Version
+
+from updater import (
+    APIManager,
+    IsUpdateAvailable,
+    OSName,
+    Warn,
+    parse_api_reply,
+    run_update_command,
+    open_manual_update_page,
+    copy_download_link,
+    AutoUpdateSupport,
+    UpdateCommands,
+    RequestSuccessful,
+    FeedbackURL,
+    LatestVersion,
+    DownloadFolder,
+    UpdateDescription,
+)
 
 if getattr(sys, 'frozen', False):
     load_dotenv(os.path.join(sys._MEIPASS, '.env'))
@@ -91,21 +109,6 @@ AppVersion = os.getenv("APP_VERSION", "3.0.0")
 LineCount = os.getenv("APP_LINE_COUNT", "0")
 Timestamp = int(os.getenv("BUILD_TIMESTAMP", "0"))
 
-MacOSUpdateUrl = os.getenv("MACOS_UPDATE_SCRIPT_URL", "https://raw.githubusercontent.com/pirlouix-dev/PDLS/refs/heads/main/Scripts/MacOS.sh")
-WindowsUpdateUrl = os.getenv("WINDOWS_UPDATE_SCRIPT_URL", "https://raw.githubusercontent.com/pirlouix-dev/PDLS/refs/heads/main/Scripts/Windows.bat")
-UpdateCommands = {
-    "darwin": f"(curl -s {MacOSUpdateUrl} > /private/tmp/PDLS_Script.sh; sh /private/tmp/PDLS_Script.sh; rm /private/tmp/PDLS_Script.sh) > /dev/null 2>&1 &",
-    "win32": f'start /min cmd /c "curl -s -o PDLS_Installer.bat {WindowsUpdateUrl} && PDLS_Installer.bat && del PDLS_Installer.bat >nul 2>&1"'
-    }
-AutoUpdateSupport = sys.platform in ["darwin", "win32"]
-
-APIUrl = os.getenv("API_BASE_URL", "https://676d02470e299dd2ddfe1998.mockapi.io/PDLS/v1")
-RequestSuccessful = False
-FeedbackURL = None
-LatestVersion = None
-DownloadFolder = None
-UpdateDescription = None
-
 ScreenScaleFactor = DPI.GetDPI()/127.75
 ScreenScaleFactor = 1 if ScreenScaleFactor <= 1.1 else ScreenScaleFactor
 CompatibilitySize = ScreenScaleFactor != 1
@@ -119,9 +122,6 @@ def GetStyleSheet(RGBA):
         }
         """
         
-def Warn(*args):
-    print("--------\nWarning: ", *args,"\n--------")
-
 def AddWidgetDisplayInfo(Widget, CenterPositionRatio, SizeRatio, AnchorPoint, AspectRatio, MaximumSizeY=16777215):
     WidgetDisplayInfo[Widget.objectName()] = {
         "CenterPositionRatio": CenterPositionRatio,
@@ -185,12 +185,7 @@ def MessageStyleSheet(MessageBox):
         }
     """
     
-def IsUpdateAvailable():
-    if not RequestSuccessful:
-        return False
-    
-    return FORCE_UPDATE or Version(AppVersion) < Version(LatestVersion)
-    
+
 def TwoChar(Num):
     Num = str(Num)
     return "0" + Num if len(Num) == 1 else Num
@@ -198,14 +193,7 @@ def TwoChar(Num):
 def Plurial(Num):
     return "" if int(Num) in [0,1] else "s"
 
-def OSName(platform):
-    if platform == "darwin":
-        return "MacOS"
-    elif platform == "win32":
-        return "Windows"
-    else:
-        return platform
-    
+
 def DEBUG_GetDisplayInfo(FrameSize, ObjectSize, ObjectPos, AnchorPoint):
     Size = (ObjectSize[0]/FrameSize[0], ObjectSize[1]/FrameSize[1])
     CenterPos = (ObjectPos[0] + ObjectSize[0]*AnchorPoint[0], ObjectPos[1] + ObjectSize[1]*AnchorPoint[1])
@@ -377,28 +365,11 @@ class MainWindow(QMainWindow):
         self.resizeEvent(QResizeEvent(WindowSize, WindowSize))
         
     def HandleAPIData(self, Reply):
-        global RequestSuccessful, FeedbackURL, LatestVersion, DownloadFolder, UpdateDescription
-        
-        Error = Reply.error()
-        if Error == QNetworkReply.NoError:
-            AnswerJson = str(Reply.readAll(), "utf-8")
-            Answer = json.loads(AnswerJson)[0]
-            
-            FeedbackURL = Answer["feedback-url"]
-            LatestVersion = Answer["latest-version"]
-            DownloadFolder = Answer["download-folder"]
-            UpdateDescription = Answer["update-description"]
-            RequestSuccessful = True
-        else:
-            RequestSuccessful = False
-            Warn("Failed to retreive data")
-     
+        parse_api_reply(Reply)
+
     def RetreiveAPIData(self):
-        self.Request = QNetworkRequest(QUrl(APIUrl))
-        self.Request.setTransferTimeout(5000)
-        self.NetworkManager = QNetworkAccessManager()
-        self.NetworkManager.finished.connect(self.HandleAPIData)
-        self.NetworkManager.get(self.Request)
+        self._api_manager = APIManager(self)
+        self._api_manager.retrieve(callback=self.HandleAPIData)
         
     def CreateDishListBackup(self, DishList):
         BackupList = self.Settings.value("DishBackup") or {}
@@ -2949,16 +2920,16 @@ class MainWindow(QMainWindow):
         
     def InstallUpdate(self, Event=None):
         if not AutoUpdateSupport:
-            self.ManualUpdate()
+            self._manual_update_dialog()
             return
-        
+
         self.Settings.setValue("LastVersion", AppVersion)
         self.Settings.setValue("ExpectedVersion", LatestVersion)
-        os.system(UpdateCommands[sys.platform])
+        run_update_command()
         self.closeEvent = self.NoCloseEvent
         self.close()
-        
-    def ManualUpdate(self, Event=None):
+
+    def _manual_update_dialog(self, Event=None):
         MessageBox = QMessageBox()
         MessageBox.setWindowTitle("Attention")
         MessageBox.setText("""<p style='text-align: center;'><img src=':/Images/Warning.png' alt='' width='100' height='100'></p>
@@ -2977,15 +2948,15 @@ class MainWindow(QMainWindow):
 
         if Answer == 2:
             return
-        
+
         if Answer == 0:
-            pyperclip.copy(DownloadFolder)
+            copy_download_link(DownloadFolder)
             return
-        
-        webbrowser.open(DownloadFolder)
+
+        open_manual_update_page(DownloadFolder)
         self.closeEvent = self.NoCloseEvent
         self.close()
-            
+
     def AcceptBackupConfirm(self):
        MessageBox = QMessageBox()
        MessageBox.setWindowTitle("Attention")
