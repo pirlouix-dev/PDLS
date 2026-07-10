@@ -67,8 +67,9 @@ from SettingsMenu  import Ui_MainWindow as SettingsMenuModule
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QStackedWidget, QVBoxLayout, QMessageBox, QPlainTextEdit, QLineEdit, QGraphicsOpacityEffect, QLabel
 from PyQt5.QtTest import QTest
 from PyQt5.QtGui import QFontMetrics, QResizeEvent, QFontDatabase
-from PyQt5.QtCore import QPoint, QSize, QPropertyAnimation, Qt, QSettings, QTimer, QObject, QEvent, QUrl, QByteArray
+from PyQt5.QtCore import QPoint, QSize, QPropertyAnimation, Qt, QSettings, QTimer, QObject, QEvent, pyqtSignal, QUrl, QByteArray
 from PyQt5.QtNetwork import QNetworkRequest, QNetworkAccessManager, QNetworkReply
+from storage import StorageManager
 import updater
 
 if getattr(sys, 'frozen', False):
@@ -275,19 +276,11 @@ class MainWindow(QMainWindow):
         self.resizeEvent = self.ResizeEvent
         self.nav = NavigationManager(self)
         
-        self.Settings = QSettings("Mathecorp", "PlatdelaSemaine")
-        if self.Settings.value("DishList") == None:
-            self.Settings.setValue("DishList", [])
-        if self.Settings.value("DishBackup") == None:
-            self.Settings.setValue("DishBackup", {})
-        if self.Settings.value("LastVersion") == None:
-            self.Settings.setValue("LastVersion", AppVersion)
-        if self.Settings.value("ExpectedVersion") == None:
-            self.Settings.setValue("ExpectedVersion", AppVersion)
-        if self.Settings.value("WindowSize") == None:
-            self.Settings.setValue("WindowSize", (868, screen.availableSize().height())) #MainFrame: (850, 750)
-        if self.Settings.value("WindowPos") == None:
-            self.Settings.setValue("WindowPos", (0, 0))
+        self.storage = StorageManager()
+        self.storage.initialize_defaults(
+            AppVersion,
+            window_size=(868, screen.availableSize().height()),
+        )
 
         self.MainMenu = MainMenu.centralwidget.findChild(QWidget, "MainFrame")
         self.ChooseMenu = ChooseMenu.centralwidget.findChild(QWidget, "MainFrame")
@@ -308,8 +301,8 @@ class MainWindow(QMainWindow):
         self.StackedWidget.addWidget(self.SettingsMenu)
 
         self.LoadMainMenu()
-        WindowSizeX, WindowSizeY = self.Settings.value("WindowSize")
-        WindowPosX, WindowPosY = self.Settings.value("WindowPos")
+        WindowSizeX, WindowSizeY = self.storage.get_window_size()
+        WindowPosX, WindowPosY = self.storage.get_window_pos()
         self.resize(WindowSizeX, WindowSizeY)
         self.move(WindowPosX, WindowPosY)
         self.setMinimumSize(752, 571) #MainFrame: (734, 553)
@@ -322,19 +315,10 @@ class MainWindow(QMainWindow):
         updater.RetreiveAPIData()
         
     def CreateDishListBackup(self, DishList):
-        BackupList = self.Settings.value("DishBackup") or {}
-        Timestamp = int(time.time())
-        while len(BackupList) >= 5:
-            OlderTimestamp = min(list(BackupList.keys()))
-            del BackupList[OlderTimestamp]
-        
-        BackupList[Timestamp] = DishList
-        self.Settings.setValue("DishBackup", BackupList)
-        
+        self.storage.create_backup(DishList)
+
     def UpdateDishList(self, NewDishList):
-        OldDishList = self.Settings.value("DishList")
-        self.CreateDishListBackup(OldDishList)
-        self.Settings.setValue("DishList", NewDishList)
+        self.storage.update_dish_list(NewDishList)
         
     def SetFixedSize(self, FontSizeWidgets):
         for WidgetFont in FontSizeWidgets:
@@ -354,8 +338,8 @@ class MainWindow(QMainWindow):
     def NoCloseEvent(self, Event):
         WindowSizeX, WindowSizeY = self.width(), self.height()
         WindowPosX, WindowPosY = self.x(), self.y()
-        self.Settings.setValue("WindowSize", (WindowSizeX, WindowSizeY))
-        self.Settings.setValue("WindowPos", (WindowPosX, WindowPosY))
+        self.storage.save_window_size((WindowSizeX, WindowSizeY))
+        self.storage.save_window_pos((WindowPosX, WindowPosY))
         
     def DEBUG_SampleDishList(self):
         if not DEBUG_MODE:
@@ -377,9 +361,8 @@ class MainWindow(QMainWindow):
         if not DEBUG_MODE:
             Warn("EraseAllData can't be used")
             return
-        
-        self.Settings.setValue("DishList", [])
-        self.Settings.setValue("DishBackup", {})
+
+        self.storage.erase_all_data()
         
 
 #%% MainMenu
@@ -428,9 +411,9 @@ class MainWindow(QMainWindow):
         self.nav.reload_window()
         self.MainMenuNeverActivated = False
         
-        if Version(AppVersion) < Version(self.Settings.value("ExpectedVersion")) and FirstStart and not NO_UPDATE_ERROR:
+        if self.storage.is_version_update_expected(AppVersion) and FirstStart and not NO_UPDATE_ERROR:
             QTimer.singleShot(0, self.UpdateError)
-            self.Settings.setValue("ExpectedVersion", AppVersion)
+            self.storage.set_expected_version(AppVersion)
         
         if FirstStart:
             FirstStart = False
@@ -658,15 +641,15 @@ class MainWindow(QMainWindow):
     
     def ExtractRightSeasons(self, Season):
         DishList = []
-        for DishDict in self.Settings.value("DishList"):
+        for DishDict in self.storage.get_dish_list():
             DishSeason = DishDict["Season"]
             if Season in DishSeason or len(DishSeason) == 4:
                 DishList.append(DishDict)
         return DishList
-    
+
     def ExtractWrongSeasons(self, Season):
         DishList = []
-        for DishDict in self.Settings.value("DishList"):
+        for DishDict in self.storage.get_dish_list():
             DishSeason = DishDict["Season"]
             if Season not in DishSeason and len(DishSeason) != 4:
                 DishList.append(DishDict)
@@ -1501,8 +1484,8 @@ class MainWindow(QMainWindow):
     def ChooseMenuCloseEvent(self, Event):
         WindowSizeX, WindowSizeY = self.width(), self.height()
         WindowPosX, WindowPosY = self.x(), self.y()
-        self.Settings.setValue("WindowSize", (WindowSizeX, WindowSizeY))
-        self.Settings.setValue("WindowPos", (WindowPosX, WindowPosY))
+        self.storage.save_window_size((WindowSizeX, WindowSizeY))
+        self.storage.save_window_pos((WindowPosX, WindowPosY))
         
         if updater.IsUpdateAvailable(AppVersion, FORCE_UPDATE) == False:
            KeepWindow = self.ShowQuitConfirm()
@@ -1815,7 +1798,7 @@ class MainWindow(QMainWindow):
         Season = self.CreatedDish["Season"]
         Season.sort()
         Desc = self.DescEntry.toPlainText()
-        DishList = self.Settings.value("DishList")
+        DishList = self.storage.get_dish_list()
         
         if not self.IsNameUnique(Name, DishList):
             self.NameAlreadyExists()
@@ -1950,8 +1933,8 @@ class MainWindow(QMainWindow):
     def CreateMenuCloseEvent(self, Event):
         WindowSizeX, WindowSizeY = self.width(), self.height()
         WindowPosX, WindowPosY = self.x(), self.y()
-        self.Settings.setValue("WindowSize", (WindowSizeX, WindowSizeY))
-        self.Settings.setValue("WindowPos", (WindowPosX, WindowPosY))
+        self.storage.save_window_size((WindowSizeX, WindowSizeY))
+        self.storage.save_window_pos((WindowPosX, WindowPosY))
         
         if updater.IsUpdateAvailable(AppVersion, FORCE_UPDATE):
             KeepWindow = self.ShowQuitUpdate()
@@ -2051,8 +2034,8 @@ class MainWindow(QMainWindow):
         
         self.ModifyMenuNeverActivated = False
         self.nav.reload_window()
-        
-        DishList = self.Settings.value("DishList")
+
+        DishList = self.storage.get_dish_list()
         DishListMaxId = len(DishList) - 1
         
         def AddWidgetFromRange(Start, Stop):
@@ -2099,7 +2082,7 @@ class MainWindow(QMainWindow):
         Season = self.CreatedDish["Season"]
         Season.sort()
         Desc = self.DescEntry.toPlainText()
-        DishList = self.Settings.value("DishList")
+        DishList = self.storage.get_dish_list()
         
         if Name != self.OldDish["Name"] and not self.IsNameUnique(Name, DishList):
             self.NameAlreadyExists()
@@ -2108,7 +2091,7 @@ class MainWindow(QMainWindow):
         self.CreatedDish["Name"] = Name
         self.CreatedDish["Season"] = Season
         self.CreatedDish["Desc"] = Desc
-        
+
         OldPlacement, NewPlacement = self.ReplaceDishAlphabetically(DishList, self.OldDish["Name"], Name)
         DishList[NewPlacement] = self.CreatedDish
         self.UpdateDishList(DishList)
@@ -2130,7 +2113,7 @@ class MainWindow(QMainWindow):
             
     def DeleteModifiedDish(self, Event=None):
         Name = self.NameEntry.text()
-        DishList = self.Settings.value("DishList")
+        DishList = self.storage.get_dish_list()
         
         if not self.ShowDeleteConfirm(Name):
             return
@@ -2421,8 +2404,8 @@ class MainWindow(QMainWindow):
     def ModifyMenuCloseEvent(self, Event):
         WindowSizeX, WindowSizeY = self.width(), self.height()
         WindowPosX, WindowPosY = self.x(), self.y()
-        self.Settings.setValue("WindowSize", (WindowSizeX, WindowSizeY))
-        self.Settings.setValue("WindowPos", (WindowPosX, WindowPosY))
+        self.storage.save_window_size((WindowSizeX, WindowSizeY))
+        self.storage.save_window_pos((WindowPosX, WindowPosY))
         
         if updater.IsUpdateAvailable(AppVersion, FORCE_UPDATE):
             KeepWindow = self.ShowQuitUpdate()
@@ -2542,8 +2525,8 @@ class MainWindow(QMainWindow):
     def ShowMenu1(self, Event=None):
         self.CurrentButtonChanged(1)
         self.BackupAvailable.show()
-        DishList = self.Settings.value("DishList")
-        DishBackup = self.Settings.value("DishBackup")
+        DishList = self.storage.get_dish_list()
+        DishBackup = self.storage.get_backup()
         CurrentDishCount, CurrentDescCount = self.GetDishAndDescOfList(DishList)
         self.CurrentDesc.setText(f"{CurrentDishCount} plat{Plurial(CurrentDishCount)} • {CurrentDescCount} description{Plurial(CurrentDescCount)}")
         self.CurrentBackup.show()
@@ -2631,22 +2614,22 @@ class MainWindow(QMainWindow):
     
     def ConnectBackupAccept(self, Backup):
         Button = Backup.findChild(QWidget, "BackupAccept")
-        
+
         def OnClicked(Event):
             if not self.AcceptBackupConfirm():
                 return
 
             Timestamp = Backup.property("Timestamp")
-            DishBackup = self.Settings.value("DishBackup")
+            DishBackup = self.storage.get_backup()
             self.UpdateDishList(DishBackup[Timestamp])
             self.ShowMenu1()
             
         Button.mousePressEvent = OnClicked
         
     def ResortDishList(self, Event):
-        DishList = self.Settings.value("DishList")
+        DishList = self.storage.get_dish_list()
         DishList.sort(key=lambda x: x["Name"].upper())
-        self.Settings.setValue("DishList", DishList)
+        self.storage.save_dish_list(DishList)
         self.SettingsSuccess.setText("Plats retriés !")
         self.SettingsSuccess.setStyleSheet("""background-color: rgb(98, 184, 55);
                                            border: 2px solid rgb(88, 166, 52);
@@ -2856,8 +2839,8 @@ class MainWindow(QMainWindow):
             self.ManualUpdate()
             return
         
-        self.Settings.setValue("LastVersion", AppVersion)
-        self.Settings.setValue("ExpectedVersion", updater.LatestVersion)
+        self.storage.set_last_version(AppVersion)
+        self.storage.set_expected_version(updater.LatestVersion)
         os.system(updater.UpdateCommands[sys.platform])
         self.closeEvent = self.NoCloseEvent
         self.close()
