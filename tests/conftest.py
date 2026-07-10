@@ -7,6 +7,7 @@ and resets updater globals between tests.
 
 import sys
 import os
+import types
 import pytest
 from PyQt5.QtWidgets import QApplication
 
@@ -17,6 +18,11 @@ if _SRC_DIR not in sys.path:
 
 # Prevent Qt from trying to open a display
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+
+# Provide a stub Images_rc module so that DishWithSettings (and other UI
+# modules that import it) can be loaded without the compiled resource file.
+if "Images_rc" not in sys.modules:
+    sys.modules["Images_rc"] = types.ModuleType("Images_rc")
 
 
 @pytest.fixture(autouse=True)
