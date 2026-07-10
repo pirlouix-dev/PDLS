@@ -53,7 +53,9 @@ from dotenv import load_dotenv
 from PyQt5 import sip
 from datetime import date, datetime
 from packaging.version import Version
-from MainModule import RowFadeController
+from navigation import (NavigationManager, NewSignal, AddWidgetDisplayInfo,
+                         WidgetDisplayInfo, ImpactedWidgetDisplay,
+                         CustomResizeFunctions, Loading, FirstStart)
 from Dish import Ui_Form as DishModule
 from DishWithSettings import Ui_Form as SettingsDishModule
 from Backup import Ui_BackupParent as BackupModule
@@ -65,7 +67,7 @@ from SettingsMenu  import Ui_MainWindow as SettingsMenuModule
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QStackedWidget, QVBoxLayout, QMessageBox, QPlainTextEdit, QLineEdit, QGraphicsOpacityEffect, QLabel
 from PyQt5.QtTest import QTest
 from PyQt5.QtGui import QFontMetrics, QResizeEvent, QFontDatabase
-from PyQt5.QtCore import QPoint, QSize, QPropertyAnimation, Qt, QSettings, QTimer, QObject, QEvent, pyqtSignal, QUrl, QByteArray
+from PyQt5.QtCore import QPoint, QSize, QPropertyAnimation, Qt, QSettings, QTimer, QObject, QEvent, QUrl, QByteArray
 from PyQt5.QtNetwork import QNetworkRequest, QNetworkAccessManager, QNetworkReply
 import updater
 
@@ -81,11 +83,6 @@ NO_UPDATE_ERROR = False
 
 Wait = QTest.qWait
 QLabel = QLabel
-WidgetDisplayInfo = {}
-ImpactedWidgetDisplay = []
-CustomResizeFunctions = []
-Loading = False
-FirstStart = True
 KeyOverride = False
 KeyOverrideFunc = None
 AppVersion = os.getenv("APP_VERSION", "3.8.2")
@@ -110,14 +107,7 @@ def GetStyleSheet(RGBA):
 def Warn(*args):
     print("--------\nWarning: ", *args,"\n--------")
 
-def AddWidgetDisplayInfo(Widget, CenterPositionRatio, SizeRatio, AnchorPoint, AspectRatio, MaximumSizeY=16777215):
-    WidgetDisplayInfo[Widget.objectName()] = {
-        "CenterPositionRatio": CenterPositionRatio,
-        "SizeRatio": SizeRatio,
-        "AnchorPoint": AnchorPoint,
-        "AspectRatio": AspectRatio,
-        "MaximumSizeY": MaximumSizeY
-    }
+
     
 def MakeTextFitByCropping(Text, Label, LineCount, TextOffset):
     FontMetrics = QFontMetrics(Label.font())
@@ -258,15 +248,6 @@ class OverrideFocus(QObject):
         
         return False
         
-class NewSignal(QObject):
-    Signal = pyqtSignal()
-    
-    def Fire(self):
-        self.Signal.emit()
-        
-    def Connect(self, Func):
-        self.Signal.connect(Func)
-
 #%% General functions
 class MainWindow(QMainWindow): 
     def __init__(self):
@@ -292,6 +273,7 @@ class MainWindow(QMainWindow):
         self.StackedWidget = QStackedWidget()
         self.setCentralWidget(self.StackedWidget)
         self.resizeEvent = self.ResizeEvent
+        self.nav = NavigationManager(self)
         
         self.Settings = QSettings("Mathecorp", "PlatdelaSemaine")
         if self.Settings.value("DishList") == None:
@@ -332,32 +314,6 @@ class MainWindow(QMainWindow):
         self.move(WindowPosX, WindowPosY)
         self.setMinimumSize(752, 571) #MainFrame: (734, 553)
         self.RetreiveAPIData()
-        
-    def StartLoading(self, OldWidgets, NewLoader):
-        global Loading
-        if Loading == True:
-            return
-        Loading = True    
-        
-        FadeController = RowFadeController(OldWidgets)
-        self.FadeControllers = FadeController
-        FadeController.toggle(True, NewLoader)
-            
-    def EndLoading(self, NewWidgets):
-        EndedSignal = NewSignal()
-        def OnFadeInEnded():
-            global Loading
-            Loading = False
-            EndedSignal.Fire()
-        
-        FadeController = RowFadeController(NewWidgets)
-        self.FadeControllers = FadeController
-        FadeController.toggle(False, OnFadeInEnded)
-        return EndedSignal
-    
-    def ReloadWindow(self):
-        WindowSize = QSize(self.width(), self.height())
-        self.resizeEvent(QResizeEvent(WindowSize, WindowSize))
         
     def HandleAPIData(self, Reply):
         updater.HandleAPIData(Reply)
@@ -469,7 +425,7 @@ class MainWindow(QMainWindow):
         CustomResizeFunctions = [self.ResizeMainMenu]
         self.MainMenuWidgetList = [self.MenusImage, self.MenusText, self.AddImage, self.AddText, self.ModifyImage, self.ModifyText, self.SettingsImage, self.SettingsText, self.Logo]
         
-        self.ReloadWindow()
+        self.nav.reload_window()
         self.MainMenuNeverActivated = False
         
         if Version(AppVersion) < Version(self.Settings.value("ExpectedVersion")) and FirstStart and not NO_UPDATE_ERROR:
@@ -479,19 +435,19 @@ class MainWindow(QMainWindow):
         if FirstStart:
             FirstStart = False
         else:
-            self.EndLoading(self.MainMenuWidgetList)
+            self.nav.end_loading(self.MainMenuWidgetList)
      
     def ChooseMenuClicked(self, Event):
-        self.StartLoading(self.MainMenuWidgetList, self.LoadChooseMenu)
+        self.nav.start_loading(self.MainMenuWidgetList, self.LoadChooseMenu)
         
     def CreateMenuClicked(self, Event):
-        self.StartLoading(self.MainMenuWidgetList, self.LoadCreateDish)
+        self.nav.start_loading(self.MainMenuWidgetList, self.LoadCreateDish)
 
     def ModifyMenuClicked(self, Event):
-        self.StartLoading(self.MainMenuWidgetList, self.LoadModifyMenu)
+        self.nav.start_loading(self.MainMenuWidgetList, self.LoadModifyMenu)
 
     def SettingsMenuClicked(self, Event):
-        self.StartLoading(self.MainMenuWidgetList, self.LoadSettingsMenu)
+        self.nav.start_loading(self.MainMenuWidgetList, self.LoadSettingsMenu)
 
     def ResizeMainMenu(self, NewSize):
         ResizeWidgetSizeX = self.ResizeWidget.width()
@@ -682,9 +638,9 @@ class MainWindow(QMainWindow):
         
         self.AnimIgnoreNextResize = True
         self.ChooseMenuNeverActivated = False
-        self.ReloadWindow()
+        self.nav.reload_window()
         self.SummonDish()
-        self.EndLoading([])
+        self.nav.end_loading([])
          
     def GetSeasonString(self, SeasonList):
         SeasonCount = len(SeasonList)
@@ -839,7 +795,7 @@ class MainWindow(QMainWindow):
         
         def AnimationEnded():
             PixelScrolled = self.VerticalScrollBar.value()
-            self.AnimCompleted()
+            NavigationManager.anim_completed(self)
             self.OnScrolling(PixelScrolled)
             self.RemoveGlitches()
             NextFunc()
@@ -854,7 +810,7 @@ class MainWindow(QMainWindow):
         if CompatibilitySize:
             self.DishPosAnim.valueChanged.connect(AnimationStepped)
         
-        self.StartAnim(self.DishPosAnim, AnimationEnded)
+        NavigationManager.start_anim(self, self.DishPosAnim, AnimationEnded)
       
     def ReverseSummonDish(self, NextFunc):
         CurrentDishPosX, CurrentDishPosY = self.GetCurrentDishPos()
@@ -869,7 +825,7 @@ class MainWindow(QMainWindow):
         self.DishPosAnim.setEndValue(QPoint(CurrentDishPosX, - 80 - self.CurrentDish.height()))
         self.DishPosAnim.setDuration(600)
 
-        self.StartAnim(self.DishPosAnim, AnimationEnded)
+        NavigationManager.start_anim(self, self.DishPosAnim, AnimationEnded)
     
     def AdjustTransition(self, PixelScrolled):
         if PixelScrolled > 15: 
@@ -894,7 +850,7 @@ class MainWindow(QMainWindow):
         
         if self.CurrentlyAnimating == True:
             self.DishPosAnim.setDuration(0)
-            self.AnimCompleted()
+            NavigationManager.anim_completed(self)
             
         CurrentDishPosX, CurrentDishPosY = self.GetCurrentDishPos()
         self.CurrentDish.move(CurrentDishPosX, CurrentDishPosY - self.CurrentDish.height() + 150)
@@ -1030,8 +986,8 @@ class MainWindow(QMainWindow):
         self.DishPosAnim.setEndValue(QPoint(self.CurrentDish.x(), self.CurrentDish.y() + self.CurrentDish.height() + 10))
         self.DishPosAnim.setDuration(300)
             
-        self.StartAnim(self.DishPosAnim, lambda:None)
-        self.StartAnim(self.ScrollAnim, AnimEnded)
+        NavigationManager.start_anim(self, self.DishPosAnim, lambda:None)
+        NavigationManager.start_anim(self, self.ScrollAnim, AnimEnded)
   
     def AnimateReverseDishOutsideScroll(self):
         self.ScrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -1044,7 +1000,7 @@ class MainWindow(QMainWindow):
             self.CurrentDish = self.ReverseDish
             self.IncrementCount(self.CurrentDish, -1)
             
-            self.ReloadWindow()
+            self.nav.reload_window()
 
             if self.ScrollVBox.count() == 0:
                 self.UndoButton.setEnabled(False)
@@ -1054,13 +1010,13 @@ class MainWindow(QMainWindow):
             
             self.VerticalScrollBar.setEnabled(True)
             self.ScrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-            self.AnimCompleted()
+            NavigationManager.anim_completed(self)
             
         self.ScrollAnim = QPropertyAnimation(self.ScrollArea, b"pos")
         self.ScrollAnim.setEndValue(QPoint(self.ScrollArea.x(), self.ScrollArea.y() - DishBeingAnimated.height() - 10))
         self.ScrollAnim.setDuration(300)
 
-        self.StartAnim(self.ScrollAnim, AnimEnded)
+        NavigationManager.start_anim(self, self.ScrollAnim, AnimEnded)
         self.ScrollArea.resize(self.ScrollArea.width(), self.ScrollArea.height() + DishBeingAnimated.height() + 10)
         
     def RefuseDish(self, Event=None):
@@ -1079,7 +1035,7 @@ class MainWindow(QMainWindow):
         self.DishPosAnim.setEndValue(QPoint(-400, self.CurrentDish.y()))
         self.DishPosAnim.setDuration(300)
         
-        self.StartAnim(self.DishPosAnim, AnimEnded)
+        NavigationManager.start_anim(self, self.DishPosAnim, AnimEnded)
         
     def ReverseRefuseDish(self):
         CurrentDishPosX, CurrentDishPosY = self.GetCurrentDishPos(self.ReverseDish)
@@ -1087,7 +1043,7 @@ class MainWindow(QMainWindow):
         def AnimEnded():
             self.ReverseDish.show()
             self.CurrentDish = self.ReverseDish
-            self.AnimCompleted()
+            NavigationManager.anim_completed(self)
             self.RemoveGlitches()
             
             if len(self.ActionHistory) == 0:
@@ -1100,7 +1056,7 @@ class MainWindow(QMainWindow):
         self.ReverseDish.move(-400, CurrentDishPosY)
         self.ReverseDish.show()
         
-        self.StartAnim(self.DishPosAnim, AnimEnded)
+        NavigationManager.start_anim(self, self.DishPosAnim, AnimEnded)
        
     def ReverseChoice(self, Event=None):
         if self.CurrentlyAnimating == True or not self.UndoButton.isEnabled() :
@@ -1134,7 +1090,7 @@ class MainWindow(QMainWindow):
             self.BackChoiceText.setVisible(True)
             self.UpdateButton.setVisible(IsUpdateAvailable())
             self.UpdateText.setVisible(self.UpdateButton.isVisible())
-            self.AnimCompleted()
+            NavigationManager.anim_completed(self)
             self.RemoveGlitches()
             
         self.ScrollAnim = QPropertyAnimation(self.ScrollArea, b"pos")
@@ -1142,7 +1098,7 @@ class MainWindow(QMainWindow):
         self.ScrollAnim.setDuration(700)
         self.ScrollArea.resize(self.ScrollArea.width(), self.ChooseMenu.height())
         
-        self.StartAnim(self.ScrollAnim, AnimEnded)
+        NavigationManager.start_anim(self, self.ScrollAnim, AnimEnded)
     
     def EndChoosing(self, Event=None):
         if self.CurrentlyAnimating == True or not self.EndButton.isEnabled():
@@ -1171,7 +1127,7 @@ class MainWindow(QMainWindow):
         self.EndMode = False
         self.CurrentlyAnimating = True
         
-        self.StartAnim(self.ScrollAnim, AnimEnded)
+        NavigationManager.start_anim(self, self.ScrollAnim, AnimEnded)
         
     def BackChoice(self):
         self.CurrentlyAnimating = True
@@ -1186,25 +1142,8 @@ class MainWindow(QMainWindow):
         self.BackChoiceText.setVisible(False)
         self.UpdateButton.setVisible(False)
         self.UpdateText.setVisible(False)
-        self.ReloadWindow()
-        
-    def StartAnim(self, Anim, AnimEnded):
-        if not self.StopAllAnim:
-            Anim.start()
-            Anim.finished.connect(AnimEnded)
-        elif time.time() - self.StopAllAnimTimer > 0.05:
-            self.StoppAllAnim = False
-            Anim.start()
-            Anim.finished.connect(AnimEnded)
-        else:
-            Anim.targetObject().move(Anim.endValue())
-            AnimEnded()
-            
-    def AnimCompleted(self):
-            def ended(): self.CurrentlyAnimating = False
-            QTimer.singleShot(50, ended)
-            # À cause de StartAnim
-            
+        self.nav.reload_window()
+    
     def IncrementCount(self, Dish, Increment):
         Type_Season = Dish.findChild(QWidget, "Type_Season")
         Type = Type_Season.property("Type")
@@ -1229,7 +1168,7 @@ class MainWindow(QMainWindow):
     def ConnectSeeMore(self, Form, DescOpen):
         def ShowAnimInScroll(NewSize):
             def AnimEnded():
-                self.AnimCompleted()
+                NavigationManager.anim_completed(self)
                 SeeMore.setProperty("IsShown", True)
                 
             def AnimStepped(NewValue):
@@ -1247,7 +1186,7 @@ class MainWindow(QMainWindow):
             
         def ShowAnimOutsideScroll(NewSize):
             def AnimEnded():
-                self.AnimCompleted()
+                NavigationManager.anim_completed(self)
                 SeeMore.setProperty("IsShown", True)
                 
             def SizeAnimStepped(NewValue):
@@ -1272,7 +1211,7 @@ class MainWindow(QMainWindow):
             Dish.setSize(NewSize)
             Description.setSize(NewSize.width(), NewSize.height() - 71)
             Form.setPosition(QPoint(Form.x(), Form.y() - NewSize.height() + Dish.height()))
-            self.AnimCompleted()
+            NavigationManager.anim_completed(self)
             SeeMore.setProperty("IsShown", True)
             
         def ShowDesc(NoAnim=False):
@@ -1302,7 +1241,7 @@ class MainWindow(QMainWindow):
             Separation.show()
         
         def HideAnimEnded():
-            self.AnimCompleted()
+            NavigationManager.anim_completed(self)
             SeeMore.setProperty("IsShown", False)
             Separation.hide()     
                 
@@ -1384,14 +1323,14 @@ class MainWindow(QMainWindow):
         self.ReverseSummonDish(self.CurrentDish.deleteLater)
         
         if not self.EndMode:
-           self.StartLoading([self.CurrentDish, self.ScrollArea, self.AcceptButton, self.RefuseButton, self.UndoButton, self.UndoText, self.EndButton, self.EndText, self.CountFrame, self.LeaveChooseButton], self.LoadMainMenu)
+           self.nav.start_loading([self.CurrentDish, self.ScrollArea, self.AcceptButton, self.RefuseButton, self.UndoButton, self.UndoText, self.EndButton, self.EndText, self.CountFrame, self.LeaveChooseButton], self.LoadMainMenu)
            return
        
         if not updater.IsUpdateAvailable(AppVersion, FORCE_UPDATE):
-            self.StartLoading([self.ScrollArea, self.AcceptButton, self.RefuseButton, self.BackChoiceButton, self.BackChoiceText, self.CountFrame, self.LeaveChooseButton], self.LoadMainMenu)
+            self.nav.start_loading([self.ScrollArea, self.AcceptButton, self.RefuseButton, self.BackChoiceButton, self.BackChoiceText, self.CountFrame, self.LeaveChooseButton], self.LoadMainMenu)
             return
         
-        self.StartLoading([self.ScrollArea, self.AcceptButton, self.RefuseButton, self.BackChoiceButton, self.BackChoiceText, self.UpdateButton, self.UpdateText, self.CountFrame, self.LeaveChooseButton], self.LoadMainMenu)
+        self.nav.start_loading([self.ScrollArea, self.AcceptButton, self.RefuseButton, self.BackChoiceButton, self.BackChoiceText, self.UpdateButton, self.UpdateText, self.CountFrame, self.LeaveChooseButton], self.LoadMainMenu)
     
     def RemoveGlitches(self):
         return
@@ -1645,8 +1584,8 @@ class MainWindow(QMainWindow):
         self.NameEntry.setFocus()
         
         self.CreateMenuNeverActivated = False
-        self.EndLoading([self.Title, self.NameEntry, self.TypeFrame, self.SeasonFrame, self.DescEntry, self.Cancel, self.Save])
-        self.ReloadWindow()
+        self.nav.end_loading([self.Title, self.NameEntry, self.TypeFrame, self.SeasonFrame, self.DescEntry, self.Cancel, self.Save])
+        self.nav.reload_window()
     
     def ChangeFocus(self, CurrentWidget, NewFocusId):
         NewWidget = self.FocusList[NewFocusId]
@@ -1916,7 +1855,7 @@ class MainWindow(QMainWindow):
         self.Success.hide()
         self.Title.show()
         self.ClosingCreateDish = True
-        self.StartLoading([self.Title, self.NameEntry, self.TypeFrame, self.SeasonFrame, self.DescEntry, self.Cancel, self.Save], self.LoadMainMenu)
+        self.nav.start_loading([self.Title, self.NameEntry, self.TypeFrame, self.SeasonFrame, self.DescEntry, self.Cancel, self.Save], self.LoadMainMenu)
         
     def NameAlreadyExists(self):
         global KeyOverride
@@ -2111,7 +2050,7 @@ class MainWindow(QMainWindow):
             Widget.setVisible(self.FullScreen)
         
         self.ModifyMenuNeverActivated = False
-        self.ReloadWindow()
+        self.nav.reload_window()
         
         DishList = self.Settings.value("DishList")
         DishListMaxId = len(DishList) - 1
@@ -2132,11 +2071,11 @@ class MainWindow(QMainWindow):
         if DishListMaxId < 10:
             AddWidgetFromRange(0, DishListMaxId)
             self.ScrollArea.setWidget(self.ScrollWidget)
-            self.EndLoading([self.ScrollArea, self.Title, self.NameEntry, self.TypeFrame, self.SeasonFrame, self.DescEntry, self.Cancel, self.Save, self.Delete])
+            self.nav.end_loading([self.ScrollArea, self.Title, self.NameEntry, self.TypeFrame, self.SeasonFrame, self.DescEntry, self.Cancel, self.Save, self.Delete])
         else:
             AddWidgetFromRange(0, 9)
             self.ScrollArea.setWidget(self.ScrollWidget)
-            EndedSignal = self.EndLoading([self.ScrollArea, self.Title, self.NameEntry, self.TypeFrame, self.SeasonFrame, self.DescEntry, self.Cancel, self.Save, self.Delete])
+            EndedSignal = self.nav.end_loading([self.ScrollArea, self.Title, self.NameEntry, self.TypeFrame, self.SeasonFrame, self.DescEntry, self.Cancel, self.Save, self.Delete])
             EndedSignal.Connect(FadeAnimEnded)
             self.VerticalScrollBar.setEnabled(False)
             self.ScrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -2187,7 +2126,7 @@ class MainWindow(QMainWindow):
         self.AnimateSuccess()
         
         if not self.FullScreen:
-            self.StartLoading([self.Title, self.NameEntry, self.TypeFrame, self.SeasonFrame, self.DescEntry, self.Cancel, self.Save, self.Delete], self.LoadModifyWindow0)
+            self.nav.start_loading([self.Title, self.NameEntry, self.TypeFrame, self.SeasonFrame, self.DescEntry, self.Cancel, self.Save, self.Delete], self.LoadModifyWindow0)
             
     def DeleteModifiedDish(self, Event=None):
         Name = self.NameEntry.text()
@@ -2218,7 +2157,7 @@ class MainWindow(QMainWindow):
         self.CheckModifyDishConditions()
         
         if not self.FullScreen:
-            self.StartLoading([self.Title, self.NameEntry, self.TypeFrame, self.SeasonFrame, self.DescEntry, self.Cancel, self.Save, self.Delete], self.LoadModifyWindow0)
+            self.nav.start_loading([self.Title, self.NameEntry, self.TypeFrame, self.SeasonFrame, self.DescEntry, self.Cancel, self.Save, self.Delete], self.LoadModifyWindow0)
         
     def LoadModifyWindow0(self):
         self.DisplayedWindow = 0
@@ -2232,8 +2171,8 @@ class MainWindow(QMainWindow):
         KeyOverride = False
         self.NameEntry.setFocus()
         
-        self.ReloadWindow()
-        self.EndLoading([self.ScrollArea, self.Cancel])
+        self.nav.reload_window()
+        self.nav.end_loading([self.ScrollArea, self.Cancel])
         
     def LoadModifyWindow1(self):
         self.DisplayedWindow = 1
@@ -2249,8 +2188,8 @@ class MainWindow(QMainWindow):
         KeyOverride = True
         self.NameEntry.setFocus()
         
-        self.ReloadWindow()
-        self.EndLoading([self.Title, self.NameEntry, self.TypeFrame, self.SeasonFrame, self.DescEntry, self.Cancel, self.Save, self.Delete])
+        self.nav.reload_window()
+        self.nav.end_loading([self.Title, self.NameEntry, self.TypeFrame, self.SeasonFrame, self.DescEntry, self.Cancel, self.Save, self.Delete])
 
     def CheckModifyDishConditions(self):
         if self.NameEntry.text() == "" \
@@ -2299,7 +2238,7 @@ class MainWindow(QMainWindow):
                 KeyOverride = True
                 self.NameEntry.setFocus()
             else:
-                self.StartLoading([self.ScrollArea, self.Cancel], self.LoadModifyWindow1)
+                self.nav.start_loading([self.ScrollArea, self.Cancel], self.LoadModifyWindow1)
             
             
         ModifyDishButton.mousePressEvent = ModifyClicked
@@ -2315,7 +2254,7 @@ class MainWindow(QMainWindow):
         
     def CancelModify(self, Event=None):
         if self.DisplayedWindow == 1 and self.FullScreen == False:
-            self.StartLoading([self.Title, self.NameEntry, self.TypeFrame, self.SeasonFrame, self.DescEntry, self.Cancel, self.Save, self.Delete], self.LoadModifyWindow0)
+            self.nav.start_loading([self.Title, self.NameEntry, self.TypeFrame, self.SeasonFrame, self.DescEntry, self.Cancel, self.Save, self.Delete], self.LoadModifyWindow0)
             return
         
         if self.HasDishBeenModified() and self.ShowCreateQuitConfirm() == True:
@@ -2325,7 +2264,7 @@ class MainWindow(QMainWindow):
         if self.FullScreen:
             self.Title.show()
         
-        self.StartLoading([self.ScrollArea, self.Title, self.NameEntry, self.TypeFrame, self.SeasonFrame, self.DescEntry, self.Cancel, self.Save, self.Delete], self.LoadMainMenu)
+        self.nav.start_loading([self.ScrollArea, self.Title, self.NameEntry, self.TypeFrame, self.SeasonFrame, self.DescEntry, self.Cancel, self.Save, self.Delete], self.LoadMainMenu)
         
     def ResizeFullScreenModify(self, WindowSize, FullScreenChanged):
         FrameSizeX, FrameSizeY = WindowSize
@@ -2590,9 +2529,9 @@ class MainWindow(QMainWindow):
         CustomResizeFunctions.append(self.ResizeSettings)
         
         self.SettingsMenuNeverActivated = False
-        self.ReloadWindow()
+        self.nav.reload_window()
         
-        self.EndLoading([self.Selection, self.SettingsFrame, self.LeaveSettingsButton])
+        self.nav.end_loading([self.Selection, self.SettingsFrame, self.LeaveSettingsButton])
         
     def ShowMenu0(self, Event=None):
         self.CurrentButtonChanged(0)
@@ -2828,7 +2767,7 @@ class MainWindow(QMainWindow):
         self.NetworkManager.post(self.Request, QByteArray(JsonData))
         
     def LeaveSettings(self, Event):        
-        self.StartLoading([self.Selection, self.SettingsFrame, self.LeaveSettingsButton], self.LoadMainMenu)
+        self.nav.start_loading([self.Selection, self.SettingsFrame, self.LeaveSettingsButton], self.LoadMainMenu)
        
     def ResizeSettings(self, WindowSize):
         FrameSizeX, FrameSizeY = WindowSize
