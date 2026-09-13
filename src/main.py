@@ -86,8 +86,8 @@ Wait = QTest.qWait
 QLabel = QLabel
 KeyOverride = False
 KeyOverrideFunc = None
-AppVersion = os.getenv("APP_VERSION", "3.8.2")
-LineCount = os.getenv("APP_LINE_COUNT", "3,052")
+AppVersion = os.getenv("APP_VERSION", "3.9.0")
+LineCount = os.getenv("APP_LINE_COUNT", "3,000")
 Timestamp = int(os.getenv("BUILD_TIMESTAMP", "0"))
 
 
