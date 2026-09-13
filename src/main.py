@@ -64,7 +64,7 @@ from ChooseMenu import Ui_MainWindow as ChooseMenuModule
 from CreateMenu import Ui_MainWindow as CreateDishModule
 from ModifyMenu import Ui_MainWindow as ModifyMenuModule
 from SettingsMenu  import Ui_MainWindow as SettingsMenuModule
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QStackedWidget, QVBoxLayout, QMessageBox, QPlainTextEdit, QLineEdit, QGraphicsOpacityEffect, QLabel
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QStackedWidget, QVBoxLayout, QMessageBox, QPlainTextEdit, QLineEdit, QGraphicsOpacityEffect, QLabel, QFileDialog
 from PyQt5.QtTest import QTest
 from PyQt5.QtGui import QFontMetrics, QResizeEvent, QFontDatabase
 from PyQt5.QtCore import QPoint, QSize, QPropertyAnimation, Qt, QSettings, QTimer, QObject, QEvent, pyqtSignal, QUrl, QByteArray
@@ -172,6 +172,12 @@ def TwoChar(Num):
 
 def Plurial(Num):
     return "" if int(Num) in [0,1] else "s"
+
+def ConvertDishesForExport(DishList):
+    return [{"name": Dish["Name"],
+             "description": Dish["Desc"],
+             "course": Dish["Type"],
+             "seasons": Dish["Season"]} for Dish in DishList]
 
 def OSName(platform):
     if platform == "darwin":
@@ -2435,6 +2441,7 @@ class MainWindow(QMainWindow):
         self.Menu2Button = self.SettingsMenu.findChild(QWidget, "Menu2")
         self.Menu3Button = self.SettingsMenu.findChild(QWidget, "Menu3")
         self.Menu4Button = self.SettingsMenu.findChild(QWidget, "Menu4")
+        self.MenuExportButton = self.SettingsMenu.findChild(QWidget, "MenuExport")
         self.SettingsFrame = self.SettingsMenu.findChild(QWidget, "SettingsFrame")
         self.Version = self.SettingsMenu.findChild(QWidget, "Version")
         self.Lines = self.SettingsMenu.findChild(QWidget, "Lines")
@@ -2458,13 +2465,16 @@ class MainWindow(QMainWindow):
         self.ResortInfo = self.SettingsMenu.findChild(QWidget, "ResortInfo")
         self.ResortButton = self.SettingsMenu.findChild(QWidget, "ResortButton")
         self.ResortText = self.SettingsMenu.findChild(QWidget, "ResortText")
+        self.ExportInfo = self.SettingsMenu.findChild(QWidget, "ExportInfo")
+        self.ExportButton = self.SettingsMenu.findChild(QWidget, "ExportButton")
+        self.ExportText = self.SettingsMenu.findChild(QWidget, "ExportText")
         self.LeaveSettingsButton = self.SettingsMenu.findChild(QWidget, "LeaveSettings")
         
         if self.SettingsMenuNeverActivated:
             self.FeedbackContentFocusInEvent = self.FeedbackContent.focusInEvent
             self.FeedbackContentFocusOutEvent = self.FeedbackContent.focusOutEvent
             
-        FontSizeWidgets = [(self.SettingsSuccess, 40), (self.Menu0Button, 16), (self.Menu1Button, 16), (self.Menu2Button, 16), (self.Menu3Button, 16), (self.Menu4Button, 16), (self.LeaveSettingsButton, 19), (self.BackupAvailable, 16), (self.CurrentDesc, 13), (self.CurrentText, 20), (self.FeedbackButton, 19), (self.FeedbackContent, 16), (self.FeedbackError, 16), (self.FeedbackText, 16), (self.LatestVersion, 16), (self.Lines, 16), (self.NetworkError, 16), (self.PyQtRef, 16), (self.ResortInfo, 16), (self.UpToDate, 16), (self.UpdateDesc, 16), (self.Version, 16)]
+        FontSizeWidgets = [(self.SettingsSuccess, 40), (self.Menu0Button, 16), (self.Menu1Button, 16), (self.MenuExportButton, 16), (self.Menu2Button, 16), (self.Menu3Button, 16), (self.Menu4Button, 16), (self.LeaveSettingsButton, 19), (self.BackupAvailable, 16), (self.CurrentDesc, 13), (self.CurrentText, 20), (self.FeedbackButton, 19), (self.FeedbackContent, 16), (self.FeedbackError, 16), (self.FeedbackText, 16), (self.LatestVersion, 16), (self.Lines, 16), (self.NetworkError, 16), (self.PyQtRef, 16), (self.ResortInfo, 16), (self.ExportInfo, 16), (self.UpToDate, 16), (self.UpdateDesc, 16), (self.Version, 16)]
         self.SetFixedSize(FontSizeWidgets)
         
         self.Menu0 = [self.Version, self.Lines, self.PyQtRef]
@@ -2472,13 +2482,14 @@ class MainWindow(QMainWindow):
         self.Menu2 = [self.NetworkError, self.FeedbackError, self.FeedbackText, self.FeedbackContent, self.FeedbackButton, self.SettingsSuccess]
         self.Menu3 = [self.ResortInfo, self.ResortButton, self.ResortText]
         self.Menu4 = [self.LatestVersion, self.UpToDate, self.UpdateButton, self.UpdateText, self.UpdateDesc, self.NetworkError]
-        self.Menu1To4 = self.Menu1 + self.Menu2 + self.Menu3 + self.Menu4
+        self.ExportGroup = [self.ExportInfo, self.ExportButton, self.ExportText]
+        self.Menu1To4 = self.Menu1 + self.Menu2 + self.Menu3 + self.Menu4 + self.ExportGroup
         
-        self.ShowList = [self.ShowMenu0, self.ShowMenu1, self.ShowMenu2, self.ShowMenu3, self.ShowMenu4]
-        self.MenuList = [self.Menu0, self.Menu1, self.Menu2, self.Menu3, self.Menu4]
-        self.ButtonList = [self.Menu0Button, self.Menu1Button, self.Menu2Button, self.Menu3Button, self.Menu4Button]
-        self.DownFocus = [1, 2, 3, 4, 0]
-        self.UpFocus = [4, 0, 1, 2, 3]
+        self.ShowList = [self.ShowMenu0, self.ShowMenu1, self.ShowExport, self.ShowMenu2, self.ShowMenu3, self.ShowMenu4]
+        self.MenuList = [self.Menu0, self.Menu1, self.ExportGroup, self.Menu2, self.Menu3, self.Menu4]
+        self.ButtonList = [self.Menu0Button, self.Menu1Button, self.MenuExportButton, self.Menu2Button, self.Menu3Button, self.Menu4Button]
+        self.DownFocus = [1, 2, 3, 4, 5, 0]
+        self.UpFocus = [5, 0, 1, 2, 3, 4]
 
         for Item in self.Menu1To4:
             Item.hide()
@@ -2496,6 +2507,7 @@ class MainWindow(QMainWindow):
         
         self.Menu0Button.mousePressEvent = self.ShowMenu0
         self.Menu1Button.mousePressEvent = self.ShowMenu1
+        self.MenuExportButton.mousePressEvent = self.ShowExport
         self.Menu2Button.mousePressEvent = self.ShowMenu2
         self.Menu3Button.mousePressEvent = self.ShowMenu3
         self.Menu4Button.mousePressEvent = self.ShowMenu4
@@ -2504,6 +2516,8 @@ class MainWindow(QMainWindow):
         self.FeedbackButton.mousePressEvent = self.SendFeedback
         self.ResortButton.mousePressEvent = self.ResortDishList
         self.ResortText.mousePressEvent = self.ResortDishList
+        self.ExportButton.mousePressEvent = self.ExportDishes
+        self.ExportText.mousePressEvent = self.ExportDishes
         self.LeaveSettingsButton.mousePressEvent = self.LeaveSettings
         self.FeedbackContent.textChanged.connect(self.FeedbackContentChanged)
         self.FeedbackContent.focusInEvent = self.OnFeedbackFocusIn
@@ -2564,8 +2578,14 @@ class MainWindow(QMainWindow):
         self.BackupScrollWidget.setLayout(self.BackupScrollLayout)
         self.BackupScroll.setWidget(self.BackupScrollWidget)
     
-    def ShowMenu2(self, Event=None):
+    def ShowExport(self, Event=None):
         self.CurrentButtonChanged(2)
+        self.ExportInfo.show()
+        self.ExportButton.show()
+        self.ExportText.show()
+    
+    def ShowMenu2(self, Event=None):
+        self.CurrentButtonChanged(3)
         if not updater.RequestSuccessful:
             self.NetworkError.show()
             return
@@ -2582,13 +2602,13 @@ class MainWindow(QMainWindow):
         self.FeedbackContent.setPlainText(self.OldFeedbackText)
         
     def ShowMenu3(self, Event=None):
-        self.CurrentButtonChanged(3)
+        self.CurrentButtonChanged(4)
         self.ResortInfo.show()
         self.ResortButton.show()
         self.ResortText.show()
        
     def ShowMenu4(self, Event=None):
-        self.CurrentButtonChanged(4)
+        self.CurrentButtonChanged(5)
         if not updater.RequestSuccessful:
             self.NetworkError.show()
             return
@@ -2631,6 +2651,31 @@ class MainWindow(QMainWindow):
         DishList.sort(key=lambda x: x["Name"].upper())
         self.storage.save_dish_list(DishList)
         self.SettingsSuccess.setText("Plats retriés !")
+        self.SettingsSuccess.setStyleSheet("""background-color: rgb(98, 184, 55);
+                                           border: 2px solid rgb(88, 166, 52);
+                                           border-radius: 10px""")
+        self.AnimateSettingsSuccess()
+    
+    def ExportDishes(self, Event=None):
+        DishList = self.storage.get_dish_list()
+        if len(DishList) == 0:
+            self.SettingsSuccess.setText("Aucun plat à exporter")
+            self.SettingsSuccess.setStyleSheet("""background-color: rgb(223, 34, 20);
+                                               border: 2px solid rgb(174, 33, 24);
+                                               border-radius: 10px""")
+            self.AnimateSettingsSuccess()
+            return
+        
+        FilePath, _ = QFileDialog.getSaveFileName(self, "Exporter les plats", "plats.json", "Fichier JSON (*.json)")
+        if FilePath == "":
+            return
+        if not FilePath.endswith(".json"):
+            FilePath += ".json"
+        
+        with open(FilePath, "w", encoding="utf-8") as File:
+            json.dump(ConvertDishesForExport(DishList), File, ensure_ascii=False, indent=2)
+        
+        self.SettingsSuccess.setText("Plats exportés !")
         self.SettingsSuccess.setStyleSheet("""background-color: rgb(98, 184, 55);
                                            border: 2px solid rgb(88, 166, 52);
                                            border-radius: 10px""")

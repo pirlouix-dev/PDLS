@@ -48,15 +48,15 @@
     <property name="lineWidth">
      <number>0</number>
     </property>
-    <widget class="QFrame" name="Selection">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>120</y>
-       <width>250</width>
-       <height>125</height>
-      </rect>
-     </property>
+     <widget class="QFrame" name="Selection">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>120</y>
+        <width>250</width>
+        <height>140</height>
+       </rect>
+      </property>
      <property name="font">
       <font>
        <family>Inter 28pt</family>
@@ -71,15 +71,15 @@
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <widget class="QListWidget" name="SettingsList">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>10</y>
-        <width>230</width>
-        <height>105</height>
-       </rect>
-      </property>
+      <widget class="QListWidget" name="SettingsList">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>230</width>
+         <height>126</height>
+        </rect>
+       </property>
       <property name="font">
        <font>
         <family>Inter 28pt</family>
@@ -143,11 +143,36 @@
        <string>Restauration des données</string>
       </property>
      </widget>
-     <widget class="QLabel" name="Menu2">
+     <widget class="QLabel" name="MenuExport">
       <property name="geometry">
        <rect>
         <x>10</x>
         <y>52</y>
+        <width>230</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Inter 28pt</family>
+        <pointsize>16</pointsize>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel {background-color: none; color: black; padding-right: 5px; padding-left: 3px; border-radius:5} QLabel::focus {background-color: rgb(0,86,217); color:white}</string>
+      </property>
+      <property name="text">
+       <string>Exporter les plats</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="Menu2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>73</y>
         <width>230</width>
         <height>21</height>
        </rect>
@@ -172,7 +197,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>73</y>
+        <y>94</y>
         <width>230</width>
         <height>21</height>
        </rect>
@@ -197,7 +222,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>94</y>
+        <y>115</y>
         <width>231</width>
         <height>21</height>
        </rect>
@@ -784,6 +809,99 @@ Merci de le signaler dans la séction &quot;Signaler un bug&quot;.</string>
       </property>
       <property name="text">
        <string>Retrier les plats</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="ExportInfo">
+      <property name="geometry">
+       <rect>
+        <x>15</x>
+        <y>15</y>
+        <width>446</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Inter 28pt</family>
+        <pointsize>16</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: white;</string>
+      </property>
+      <property name="text">
+       <string>Exportez vos plats actuels dans un fichier JSON, afin de les importer dans une autre application.
+Les sauvegardes ne sont pas exportées.</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="ExportButton">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>130</y>
+        <width>215</width>
+        <height>45</height>
+       </rect>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Inter 28pt</family>
+       </font>
+      </property>
+      <property name="cursor">
+       <cursorShape>PointingHandCursor</cursorShape>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap resource="../Images.qrc">:/Images/Button.png</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="ExportText">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>130</y>
+        <width>215</width>
+        <height>38</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Inter 28pt</family>
+        <pointsize>23</pointsize>
+       </font>
+      </property>
+      <property name="cursor">
+       <cursorShape>PointingHandCursor</cursorShape>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel{color:rgb(255,255,255); background: none} QLabel:disabled{color:rgb(208, 208, 208)}</string>
+      </property>
+      <property name="text">
+       <string>Exporter</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
