@@ -10,6 +10,7 @@ Covers:
 - MakeTextFitByCropping (text cropping logic)
 - MakeTextFitWithSize   (font size reduction)
 - MessageStyleSheet     (message box styling)
+- ConvertDishesForExport (JSON export schema mapping)
 """
 
 from unittest.mock import MagicMock, patch, PropertyMock
@@ -111,6 +112,54 @@ class TestPlurial:
         assert Plurial("0") == ""
         assert Plurial("1") == ""
         assert Plurial("3") == "s"
+
+
+# ─── ConvertDishesForExport ───────────────────────────────────────────────────
+
+
+class TestConvertDishesForExport:
+    """ConvertDishesForExport maps internal dish dicts to the export schema."""
+
+    def test_empty_list(self):
+        from main import ConvertDishesForExport
+        assert ConvertDishesForExport([]) == []
+
+    def test_maps_internal_keys(self):
+        from main import ConvertDishesForExport
+        dish = {"Name": "Quiche", "Desc": "Avec des poireaux", "Type": 1, "Season": [0, 3]}
+        assert ConvertDishesForExport([dish]) == [
+            {"name": "Quiche", "description": "Avec des poireaux", "course": 1, "seasons": [0, 3]},
+        ]
+
+    def test_key_order(self):
+        from main import ConvertDishesForExport
+        dish = {"Name": "Salade", "Desc": "", "Type": 0, "Season": [1]}
+        result = ConvertDishesForExport([dish])[0]
+        assert list(result.keys()) == ["name", "description", "course", "seasons"]
+
+    def test_empty_description(self):
+        from main import ConvertDishesForExport
+        dish = {"Name": "Salade", "Desc": "", "Type": 0, "Season": [1]}
+        assert ConvertDishesForExport([dish])[0]["description"] == ""
+
+    def test_all_seasons_preserved(self):
+        from main import ConvertDishesForExport
+        dish = {"Name": "Tarte", "Desc": "Toutes saisons", "Type": 2, "Season": [0, 1, 2, 3]}
+        assert ConvertDishesForExport([dish])[0]["seasons"] == [0, 1, 2, 3]
+
+    def test_preserves_multiple_dishes_order(self):
+        from main import ConvertDishesForExport
+        dishes = [
+            {"Name": "A", "Desc": "", "Type": 1, "Season": [0]},
+            {"Name": "B", "Desc": "", "Type": 2, "Season": [3]},
+        ]
+        assert [d["name"] for d in ConvertDishesForExport(dishes)] == ["A", "B"]
+
+    def test_course_values_unchanged(self):
+        from main import ConvertDishesForExport
+        for course in (0, 1, 2):
+            dish = {"Name": "X", "Desc": "", "Type": course, "Season": [0]}
+            assert ConvertDishesForExport([dish])[0]["course"] == course
 
 
 # ─── OSName ───────────────────────────────────────────────────────────────────
