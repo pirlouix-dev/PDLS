@@ -833,8 +833,7 @@ Merci de le signaler dans la séction &quot;Signaler un bug&quot;.</string>
        <string notr="true">color: white;</string>
       </property>
       <property name="text">
-       <string>Exportez vos plats actuels dans un fichier JSON, afin de les importer dans une autre application.
-Les sauvegardes ne sont pas exportées.</string>
+       <string>Exportez vos plats actuels dans un fichier JSON, afin de les importer dans une nouvelle version de Plat de la Semaine.</string>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -847,7 +846,7 @@ Les sauvegardes ne sont pas exportées.</string>
       <property name="geometry">
        <rect>
         <x>130</x>
-        <y>130</y>
+        <y>95</y>
         <width>215</width>
         <height>45</height>
        </rect>
@@ -883,7 +882,7 @@ Les sauvegardes ne sont pas exportées.</string>
       <property name="geometry">
        <rect>
         <x>130</x>
-        <y>130</y>
+        <y>95</y>
         <width>215</width>
         <height>38</height>
        </rect>

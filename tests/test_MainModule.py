@@ -132,6 +132,33 @@ class TestToggle:
         ctrl.toggle(False, lambda: None)
         assert ctrl.Animation.direction() == ctrl.Animation.Backward
 
+    def test_backward_shows_widgets(self):
+        """Fading in must reveal widgets hidden by a previous fade-out."""
+        from MainModule import RowFadeController
+        w1, w2 = _make_mock_widget("a"), _make_mock_widget("b")
+        ctrl = RowFadeController([w1, w2])
+        ctrl.toggle(False, lambda: None)
+        w1.show.assert_called_once()
+        w2.show.assert_called_once()
+
+    def test_backward_starts_from_transparent(self):
+        """Fade-in resets opacity to 0.0 so there is no flash of full
+        opacity before the animation's first frame."""
+        from MainModule import RowFadeController
+        w = _make_mock_widget()
+        ctrl = RowFadeController([w])
+        effect = ctrl.Effects[0]
+        ctrl.toggle(False, lambda: None)
+        assert call(0.0) in effect.setOpacity.call_args_list
+
+    def test_forward_does_not_show_widgets(self):
+        """Fade-out must not force widgets visible."""
+        from MainModule import RowFadeController
+        w = _make_mock_widget()
+        ctrl = RowFadeController([w])
+        ctrl.toggle(True, lambda: None)
+        w.show.assert_not_called()
+
     def test_stores_return_function(self):
         from MainModule import RowFadeController
         w = _make_mock_widget()

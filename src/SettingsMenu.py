@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file './ui/SettingsMenu.ui'
+# Form implementation generated from reading ui file 'ui/SettingsMenu.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.11
 #
@@ -315,7 +315,7 @@ class Ui_MainWindow(object):
         self.ExportInfo.setObjectName("ExportInfo")
         self.ExportButton = QtWidgets.QLabel(self.SettingsFrame)
         self.ExportButton.setEnabled(True)
-        self.ExportButton.setGeometry(QtCore.QRect(130, 130, 215, 45))
+        self.ExportButton.setGeometry(QtCore.QRect(130, 95, 215, 45))
         self.ExportButton.setMaximumSize(QtCore.QSize(16777215, 16777215))
         font = QtGui.QFont()
         font.setFamily("Inter 28pt")
@@ -327,7 +327,7 @@ class Ui_MainWindow(object):
         self.ExportButton.setObjectName("ExportButton")
         self.ExportText = QtWidgets.QLabel(self.SettingsFrame)
         self.ExportText.setEnabled(True)
-        self.ExportText.setGeometry(QtCore.QRect(130, 130, 215, 38))
+        self.ExportText.setGeometry(QtCore.QRect(130, 95, 215, 38))
         font = QtGui.QFont()
         font.setFamily("Inter 28pt")
         font.setPointSize(23)
@@ -437,8 +437,7 @@ class Ui_MainWindow(object):
         self.ResortInfo.setText(_translate("MainWindow", "Si vous avez besoin de retrier vos plats dans l\'ordre alphabétique, c\'est qu\'un bug est survenu. \n"
 "Merci de le signaler dans la séction \"Signaler un bug\"."))
         self.ResortText.setText(_translate("MainWindow", "Retrier les plats"))
-        self.ExportInfo.setText(_translate("MainWindow", "Exportez vos plats actuels dans un fichier JSON, afin de les importer dans une autre application.\n"
-"Les sauvegardes ne sont pas exportées."))
+        self.ExportInfo.setText(_translate("MainWindow", "Exportez vos plats actuels dans un fichier JSON, afin de les importer dans une nouvelle version de Plat de la Semaine."))
         self.ExportText.setText(_translate("MainWindow", "Exporter"))
         self.UpdateText2.setText(_translate("MainWindow", "Mettre à jour"))
         self.SettingsSuccess.setText(_translate("MainWindow", "Commentaire envoyé !"))

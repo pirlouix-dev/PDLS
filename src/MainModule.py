@@ -36,6 +36,12 @@ class RowFadeController(QObject):
         self.Animation.stop()
         self._disconnect_return()
         self._ReturnFunction = ReturnFunction
+        if not FadeIn:
+            # Widgets may have been hidden by a previous fade-out; make
+            # them visible again before animating opacity 0.0 -> 1.0.
+            self.setOpacity(0.0)
+            for Widget in self.Widgets:
+                Widget.show()
         self.Animation.setDirection(
             self.Animation.Forward if FadeIn else self.Animation.Backward
         )

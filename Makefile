@@ -1,14 +1,14 @@
 # Makefile for Plat de la Semaine (PDLS)
 
 PROJECT_DIR      := $(CURDIR)
-VENV_MAC         ?= $(HOME)/PDLS
 VENV_LOCAL       ?= $(PROJECT_DIR)/venv
+VENV_MAC         ?= $(VENV_LOCAL)
 WINE_PYINSTALLER ?= $(HOME)/.wine/drive_c/Program\ Files\ \(x86\)/Python38/Scripts/pyinstaller.exe
 CREATE_DMG       ?= create-dmg
 
 SHELL := /bin/bash
 
-.PHONY: all build build-macos build-windows images clean
+.PHONY: all build build-macos build-windows images ui clean
 
 all: build
 
@@ -16,7 +16,7 @@ build: build-macos build-windows
 
 build-macos: images
 	@echo "Building macOS application..."
-	source $(VENV_MAC)/bin/activate && pyinstaller --clean PDLS\ Mac.spec
+	$(VENV_MAC)/bin/pyinstaller --clean --noconfirm PDLS\ Mac.spec
 	@echo "Creating DMG installer..."
 	rm -rf /tmp/pdls-dmg
 	mkdir -p /tmp/pdls-dmg
@@ -36,7 +36,14 @@ build-macos: images
 
 build-windows: images
 	@echo "Building Windows application..."
-	wine $(WINE_PYINSTALLER) --clean PDLS\ windows.spec
+	wine $(WINE_PYINSTALLER) --clean --noconfirm PDLS\ windows.spec
+
+ui:
+	@echo "Compiling .ui files with pyuic5..."
+	for f in ui/*.ui; do \
+		echo "  $$f -> src/$$(basename "$${f%.ui}").py"; \
+		$(VENV_LOCAL)/bin/pyuic5 "$$f" -o "src/$$(basename "$${f%.ui}").py"; \
+	done
 
 images:
 	@echo "Compiling resources with pyrcc5..."
