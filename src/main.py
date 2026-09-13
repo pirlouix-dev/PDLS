@@ -73,10 +73,10 @@ from storage import StorageManager
 import updater
 
 if getattr(sys, 'frozen', False):
-    load_dotenv(os.path.join(sys._MEIPASS, '.env'))
+    load_dotenv(os.path.join(sys._MEIPASS, '.env'), override=True)
 else:
     ScriptDir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    load_dotenv(os.path.join(ScriptDir, '.env'))
+    load_dotenv(os.path.join(ScriptDir, '.env'), override=True)
 
 DEBUG_MODE = False
 FORCE_UPDATE = False
